@@ -1,0 +1,1 @@
+So basically the "pos" folder is your frontend, and "server" folder is your backend. My POS split into 2 parts, ther server handle all the important logic. The fronend handle some but not much. They comunicating through HTTP and the server is on a local host at port 8000. Im currntly running it with python 3.14T the free threading version of 3.14. 
