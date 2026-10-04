@@ -1,0 +1,4532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+
+/* ====================================================
+   NÁU DARK SCROLLBARS
+   ==================================================== */
+
+/*
+  WebView2/Chromium otherwise uses the bright Windows scrollbar, which looks
+  completely out of place against NÁU's dark panels.
+*/
+html {
+    scrollbar-color: #4b4b4b #181818;
+    scrollbar-width: thin;
+}
+
+* {
+    scrollbar-color: #4b4b4b transparent;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    min-height: 34px;
+    background: #4b4b4b;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #666;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background: #777;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+</style>
+
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>NAU Backend Console</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0e0e0e;
+            --panel: #171717;
+            --panel-2: #1d1d1d;
+            --border: #303030;
+            --border-soft: #262626;
+            --text: #f5f5f5;
+            --muted: #8a8a8a;
+            --green: #39d353;
+            --green-dark: #123d20;
+            --red: #ff5151;
+            --red-dark: #421b1b;
+            --yellow: #ffd84d;
+            --yellow-dark: #4a3d15;
+            --blue: #67a7ff;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        body {
+            height: 100vh;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            flex: 0 0 auto;
+            min-height: 82px;
+            padding: 16px 20px;
+            background: #171717;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brandBlock {
+            min-width: 0;
+        }
+
+        .brandTitle {
+            margin: 0;
+            font-size: 27px;
+            letter-spacing: 0.4px;
+        }
+
+        .brandSubtitle {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .headerRight {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .serverPill {
+            min-height: 40px;
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #202020;
+            color: #aaa;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .serverDot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--red);
+            box-shadow: 0 0 0 3px rgba(255, 81, 81, 0.09);
+        }
+
+        .serverPill.online {
+            color: #c9ffd4;
+            border-color: #2e7440;
+            background: #17271b;
+        }
+
+        .serverPill.online .serverDot {
+            background: var(--green);
+            box-shadow: 0 0 0 3px rgba(57, 211, 83, 0.09);
+        }
+
+        .serverPill.checking .serverDot {
+            background: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 216, 77, 0.09);
+        }
+
+        .actionButton {
+            min-height: 42px;
+            padding: 9px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        #testAllButton {
+            background: #0d6b2b;
+            color: white;
+        }
+
+        #testAllButton:hover:not(:disabled) {
+            background: #128b39;
+        }
+
+        #testAllButton:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .secondaryButton {
+            background: #292929;
+            color: #ddd;
+        }
+
+        .secondaryButton:hover {
+            background: #3a3a3a;
+        }
+
+        main {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns:
+                minmax(390px, 0.85fr)
+                minmax(520px, 1.35fr);
+        }
+
+        .testPane {
+            min-width: 0;
+            min-height: 0;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+
+        .logPane {
+            min-width: 0;
+            min-height: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: #0b0b0b;
+        }
+
+        .sectionTitleRow {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .embeddedCoveragePane {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .embeddedCoveragePane .sectionTitleRow {
+            margin-bottom: 14px;
+        }
+
+        .sectionTitle {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .sectionDescription {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .notice {
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border: 1px solid #574a1d;
+            border-radius: 8px;
+            background: #211d0f;
+            color: #e8d786;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .testCard {
+            min-height: 155px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-left: 4px solid #555;
+            border-radius: 9px;
+            background: #171717;
+            display: flex;
+            flex-direction: column;
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease;
+        }
+
+        .testCard.running {
+            border-color: #7a6424;
+            border-left-color: var(--yellow);
+            background: #1e1b12;
+        }
+
+        .testCard.passed {
+            border-color: #286e3d;
+            border-left-color: var(--green);
+            background: #142019;
+        }
+
+        .testCard.failed {
+            border-color: #8a3a3a;
+            border-left-color: var(--red);
+            background: #241515;
+        }
+
+        .testCard.partial {
+            border-color: #7a6424;
+            border-left-color: var(--yellow);
+            background: #1e1b12;
+        }
+
+        .testCard.partial .statusBadge {
+            background: #443913;
+            color: #ffe37b;
+        }
+
+        .testCardHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .testCardTitle {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .statusBadge {
+            padding: 5px 8px;
+            border-radius: 999px;
+            background: #2b2b2b;
+            color: #ff9c9c;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .testCard.running .statusBadge {
+            background: #443913;
+            color: #ffe37b;
+        }
+
+        .testCard.passed .statusBadge {
+            background: #173b21;
+            color: #9effae;
+        }
+
+        .testCard.failed .statusBadge {
+            background: #4d1f1f;
+            color: #ff9999;
+        }
+
+        .testCardDetail {
+            margin-top: 11px;
+            color: #aaa;
+            font-size: 12px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .testCardMeta {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-soft);
+            color: #6f6f6f;
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
+        .logHeader {
+            min-height: 74px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            background: #151515;
+        }
+
+        .logHeader h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .logHeaderText {
+            min-width: 0;
+        }
+
+        .logHeaderSub {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .logActions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .smallButton {
+            min-height: 34px;
+            padding: 7px 10px;
+            border: none;
+            border-radius: 7px;
+            background: #292929;
+            color: #bbb;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .smallButton:hover {
+            background: #3a3a3a;
+            color: white;
+        }
+
+        #log {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 18px 28px 18px;
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .logLine {
+            padding: 2px 0;
+            color: #bdbdbd;
+        }
+
+        .logTime {
+            color: #606060;
+        }
+
+        .logLine.info {
+            color: #bdbdbd;
+        }
+
+        .logLine.request {
+            color: #8fbfff;
+        }
+
+        .logLine.response {
+            color: #bca7ff;
+        }
+
+        .logLine.success {
+            color: #7de991;
+        }
+
+        .logLine.server {
+            color: #76d6ff;
+        }
+
+        .logLine.warning {
+            color: #efd66f;
+        }
+
+        .logLine.error {
+            color: #ff7b7b;
+        }
+
+        .logLine.section {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #222;
+            color: white;
+            font-weight: bold;
+        }
+
+        .summaryStrip {
+            margin-top: 16px;
+            padding: 13px 14px;
+            background: #161616;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        #suiteSummary {
+            font-weight: bold;
+            color: #bbb;
+        }
+
+        @media (
+            max-width: 1000px
+        ) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow: auto;
+            }
+
+            main {
+                overflow: visible;
+                grid-template-columns: 1fr;
+            }
+
+            .testPane {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .logPane {
+                height: 520px;
+                min-height: 520px;
+            }
+        }
+
+        @media (
+            max-width: 620px
+        ) {
+            header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .headerRight {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .testPane {
+                padding: 14px;
+            }
+        }
+    </style>
+
+<style id="nau-storage-notice-style">
+#nau-storage-notice-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0,0,0,.68);
+    font-family: Arial, Helvetica, sans-serif;
+}
+#nau-storage-notice-overlay.open { display: flex; }
+#nau-storage-notice-card {
+    width: min(520px, 100%);
+    padding: 24px;
+    border: 1px solid #444;
+    border-radius: 12px;
+    background: #1b1b1b;
+    color: #eee;
+    box-shadow: 0 18px 60px rgba(0,0,0,.5);
+}
+#nau-storage-notice-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+}
+#nau-storage-notice-dot {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    border-radius: 50%;
+    background: #f2b84b;
+    box-shadow: 0 0 0 4px rgba(242,184,75,.10);
+}
+#nau-storage-notice-dot.restored {
+    background: #35c76f;
+    box-shadow: 0 0 0 4px rgba(53,199,111,.10);
+}
+#nau-storage-notice-title {
+    margin: 0;
+    color: #f4f4f4;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+#nau-storage-notice-message {
+    margin: 0;
+    color: #c9c9c9;
+    font-size: 15px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+}
+#nau-storage-notice-ok {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 20px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #2b2b2b;
+    color: #fff;
+    cursor: pointer;
+    font: 700 14px Arial, Helvetica, sans-serif;
+}
+#nau-storage-notice-ok:hover { background: #343434; }
+</style>
+
+</head>
+
+<body>
+
+<header>
+    <div class="brandBlock">
+        <h1 class="brandTitle">
+            NAU Backend Console
+        </h1>
+
+        <div class="brandSubtitle">
+            API health, CRUD verification and server activity
+        </div>
+    </div>
+
+    <div class="headerRight">
+        <div
+            id="serverPill"
+            class="serverPill checking"
+        >
+            <span class="serverDot"></span>
+            <span id="serverStatusText">
+                Checking server...
+            </span>
+        </div>
+
+        <button
+            id="testAllButton"
+            class="actionButton"
+            onclick="void runAllTests().catch(error => { console.error(error); logMessage('TEST ALL crashed: ' + error.message, 'error'); })"
+        >
+            TEST ALL API
+        </button>
+
+        <button
+            id="googleTestButton"
+            class="actionButton secondaryButton"
+            onclick="testGoogleApi()"
+        >
+            TEST GOOGLE API
+        </button>
+
+        <button
+            class="actionButton secondaryButton"
+            onclick="checkServer(true)"
+        >
+            PING SERVER
+        </button>
+    </div>
+</header>
+
+<main>
+
+    <section class="testPane">
+
+        <div class="sectionTitleRow">
+            <div>
+                <h2 class="sectionTitle">
+                    API Test Suite
+                </h2>
+
+                <div class="sectionDescription">
+                    Red = failed. Yellow = Drive connected but no Sheet to inspect.
+                    Green = test passed; Google checks do not change sales.
+                </div>
+            </div>
+        </div>
+        <div class="cards">
+
+            <article
+                id="card-server"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Server
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Root server response and JSON health check.
+                </div>
+
+                <div class="testCardMeta">
+                    GET /
+                </div>
+            </article>
+
+            <article
+                id="card-ingredients"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Ingredients API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Creates a temporary ingredient, reads it, edits it,
+                    verifies the edit, deletes it, then verifies cleanup.
+                </div>
+
+                <div class="testCardMeta">
+                    GET • POST • PUT • DELETE
+                </div>
+            </article>
+
+            <article
+                id="card-recipes"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Recipes API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Creates a temporary recipe using the test ingredient,
+                    edits it, reads it back, then deletes and verifies cleanup.
+                </div>
+
+                <div class="testCardMeta">
+                    GET • POST • PUT • DELETE
+                </div>
+            </article>
+
+            <article
+                id="card-promo"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Promo API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Creates, reads, edits, verifies and deletes a temporary
+                    promo code.
+                </div>
+
+                <div class="testCardMeta">
+                    GET • POST • PUT • DELETE
+                </div>
+            </article>
+
+            <article
+                id="card-shot"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        SHOT Special Recipe
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Verifies the server-managed SHOT special recipe exists and
+                    has the expected system markers.
+                </div>
+
+                <div class="testCardMeta">
+                    GET /api/recipes/SHOT
+                </div>
+            </article>
+
+            <article
+                id="card-sales"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Sales History API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Reads permanent sales history and validates the response
+                    shape without changing any historical data.
+                </div>
+
+                <div class="testCardMeta">
+                    GET /api/sales/history
+                </div>
+            </article>
+
+            <article
+                id="card-google"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Google Finance API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Checks Google sign-in, Drive access and an existing Finance
+                    spreadsheet. Does not write to Google Sheets.
+                </div>
+
+                <div class="testCardMeta">
+                    POST /api/finance/google/test (read only)
+                </div>
+            </article>
+
+            <article
+                id="card-payment"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Payment API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Runs a safe finalize request and expects an insufficient
+                    stock rejection before any inventory or history commit.
+                </div>
+
+                <div class="testCardMeta">
+                    POST /api/sales/finalize
+                </div>
+            </article>
+
+            <article
+                id="card-refund"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Refund API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Safely verifies the refund endpoint and transaction lookup
+                    without changing any real sale.
+                </div>
+
+                <div class="testCardMeta">
+                    POST /api/sales/{transaction_id}/refund
+                </div>
+            </article>
+
+            <article
+                id="card-void"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Void API
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Safely verifies the void endpoint and transaction lookup
+                    without restoring inventory or changing any real sale.
+                </div>
+
+                <div class="testCardMeta">
+                    POST /api/sales/{transaction_id}/void
+                </div>
+            </article>
+
+            <article
+                id="card-cleanup"
+                class="testCard"
+            >
+                <div class="testCardHeader">
+                    <div class="testCardTitle">
+                        Cleanup Verification
+                    </div>
+
+                    <div class="statusBadge">
+                        NOT TESTED
+                    </div>
+                </div>
+
+                <div class="testCardDetail">
+                    Confirms the temporary recipe, promo and ingredient are
+                    gone after the suite finishes.
+                </div>
+
+                <div class="testCardMeta">
+                    Resource cleanup + list verification
+                </div>
+            </article>
+
+        </div>
+
+        <div class="summaryStrip">
+            <span>
+                Suite status
+            </span>
+
+            <span id="suiteSummary">
+                Not run
+            </span>
+        </div>
+
+    
+
+<div id="fullCoveragePane" class="embeddedCoveragePane">
+    <div class="sectionTitleRow">
+        <div>
+            <h2 class="sectionTitle">Complete API Coverage</h2>
+            <div class="sectionDescription">
+                Checks every API family and HTTP route safely. Mutation routes are exercised only through validation or guaranteed-missing IDs, so the diagnostic run does not create temporary POS records.
+            </div>
+        </div>
+    </div>
+    <div class="cards">
+        <article id="card-full-coverage" class="testCard">
+            <div class="testCardHeader">
+                <div class="testCardTitle">All Route / Client-Server Contract Tests</div>
+                <div class="statusBadge">NOT TESTED</div>
+            </div>
+            <div class="testCardDetail" id="fullCoverageDetail">
+                API-only diagnostics. No temporary ingredient, recipe, promo, sale, refund, void, or test record is created.
+            </div>
+            <div class="testCardMeta">
+                GET • POST • PUT • DELETE • OPTIONS • JSON • 404/400 validation
+            </div>
+        </article>
+    </div>
+</div>
+
+    </section>
+
+    
+
+
+<section class="logPane">
+
+        <div class="logHeader">
+            <div class="logHeaderText">
+                <h2>
+                    Server Test Log
+                </h2>
+
+                <div class="logHeaderSub">
+                    Browser API traffic and live internal Python server actions appear here.
+                </div>
+            </div>
+
+            <div class="logActions">
+                <button
+                    class="smallButton"
+                    onclick="copyLog()"
+                >
+                    COPY
+                </button>
+
+                <button
+                    class="smallButton"
+                    onclick="clearLog()"
+                >
+                    CLEAR
+                </button>
+            </div>
+        </div>
+
+        <div id="log"></div>
+
+    </section>
+
+</main>
+
+
+<script>
+    // Prevent duplicate TEST ALL runs while one diagnostic pass is active.
+    let testRunning = false;
+
+
+const SERVER_URL =
+    "http://127.0.0.1:8000";
+
+
+let suiteRunning =
+    false;
+
+
+let logPlainText =
+    [];
+
+
+let serverLogCursor =
+    null;
+
+
+let serverLogPolling =
+    false;
+
+
+let serverLogConnected =
+    false;
+
+
+const CARD_IDS = [
+    "server",
+    "ingredients",
+    "recipes",
+    "promo",
+    "shot",
+    "sales",
+    "google",
+    "payment",
+    "refund",
+    "void",
+    "cleanup",
+    "full-coverage"
+];
+
+
+const DEFAULT_CARD_DETAILS = {
+
+    server:
+        "Root server response and JSON health check.",
+
+    ingredients:
+        "Creates a temporary ingredient, reads it, edits it, verifies the edit, deletes it, then verifies cleanup.",
+
+    recipes:
+        "Creates a temporary recipe using the test ingredient, edits it, reads it back, then deletes and verifies cleanup.",
+
+    promo:
+        "Creates, reads, edits, verifies and deletes a temporary promo code.",
+
+    shot:
+        "Verifies the server-managed SHOT special recipe exists and has the expected system markers.",
+
+    sales:
+        "Reads permanent sales history and validates the response shape without changing any historical data.",
+
+    google:
+        "Checks Google sign-in, Drive access and a Finance spreadsheet without changing sales or Sheets.",
+
+    payment:
+        "Runs a safe finalize request and expects an insufficient stock rejection before any inventory or history commit.",
+
+    refund:
+        "Safely verifies the refund endpoint and transaction lookup without changing any real sale.",
+
+    void:
+        "Safely verifies the void endpoint and transaction lookup without restoring inventory or changing any real sale.",
+
+    cleanup:
+        "Confirms the temporary recipe, promo and ingredient are gone after the suite finishes."
+
+};
+
+
+// ============================================================
+// LOGGING
+// ============================================================
+
+function getTimeText() {
+
+    return new Date().toLocaleTimeString(
+        "en-GB",
+        {
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit",
+
+            second:
+                "2-digit"
+        }
+    );
+
+}
+
+
+function logMessage(
+    message,
+    type = "info"
+) {
+
+    const log =
+        document.getElementById(
+            "log"
+        );
+
+
+    const line =
+        document.createElement(
+            "div"
+        );
+
+
+    line.className =
+        "logLine " +
+        type;
+
+
+    const time =
+        getTimeText();
+
+
+    line.innerHTML =
+        '<span class="logTime">[' +
+        escapeHTML(
+            time
+        ) +
+        ']</span> ' +
+        escapeHTML(
+            message
+        );
+
+
+    log.appendChild(
+        line
+    );
+
+
+    logPlainText.push(
+        "[" +
+        time +
+        "] " +
+        message
+    );
+
+
+    log.scrollTop =
+        log.scrollHeight;
+
+}
+
+
+function logSection(
+    title
+) {
+
+    logMessage(
+        "===== " +
+        title +
+        " =====",
+        "section"
+    );
+
+}
+
+
+
+
+// ============================================================
+// INTERNAL SERVER LOG
+//
+// The browser test log shows requests and responses.
+// This stream also reads the Python server's NAU_LOG.txt so
+// actions performed from any POS page appear here as they happen.
+// ============================================================
+
+function appendServerLogLine(
+    serverLine
+) {
+
+    const log =
+        document.getElementById(
+            "log"
+        );
+
+
+    const line =
+        document.createElement(
+            "div"
+        );
+
+
+    const rawText =
+        String(
+            serverLine ??
+            ""
+        );
+
+
+    const upperText =
+        rawText.toUpperCase();
+
+
+    let type =
+        "server";
+
+
+    if (
+        upperText.includes(
+            "FAILED"
+        )
+        ||
+        upperText.includes(
+            "ERROR"
+        )
+    ) {
+
+        type =
+            "error";
+
+    }
+
+    else if (
+        upperText.includes(
+            "CREATED"
+        )
+        ||
+        upperText.includes(
+            "UPDATED"
+        )
+        ||
+        upperText.includes(
+            "DELETED"
+        )
+        ||
+        upperText.includes(
+            "FINALIZED"
+        )
+        ||
+        upperText.includes(
+            "RECOVERY COMPLETE"
+        )
+        ||
+        upperText.includes(
+            "STARTED"
+        )
+        ||
+        upperText.includes(
+            "REPAIRED"
+        )
+    ) {
+
+        type =
+            "success";
+
+    }
+
+
+    line.className =
+        "logLine " +
+        type;
+
+
+    line.textContent =
+        "[SERVER] " +
+        rawText;
+
+
+    log.appendChild(
+        line
+    );
+
+
+    logPlainText.push(
+        "[SERVER] " +
+        rawText
+    );
+
+
+    log.scrollTop =
+        log.scrollHeight;
+
+}
+
+
+async function syncServerLog(
+    initialLoad = false
+) {
+
+    if (
+        serverLogPolling
+    ) {
+
+        return;
+
+    }
+
+
+    serverLogPolling =
+        true;
+
+
+    try {
+
+        let url;
+
+
+        if (
+            serverLogCursor ===
+            null
+        ) {
+
+            url =
+                SERVER_URL +
+                "/api/server/log?tail=40";
+
+        }
+
+        else {
+
+            url =
+                SERVER_URL +
+                "/api/server/log?after=" +
+                encodeURIComponent(
+                    serverLogCursor
+                );
+
+        }
+
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        "GET",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
+
+
+        let data;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        }
+
+        catch {
+
+            data = {};
+
+        }
+
+
+        if (
+            !response.ok
+            ||
+            data.success !==
+            true
+        ) {
+
+            throw new Error(
+                data.error ||
+                (
+                    "HTTP " +
+                    response.status
+                )
+            );
+
+        }
+
+
+        const lines =
+            Array.isArray(
+                data.lines
+            )
+                ?
+                    data.lines
+                :
+                    [];
+
+
+        const newCursor =
+            Number(
+                data.cursor
+            );
+
+
+        if (
+            Number.isFinite(
+                newCursor
+            )
+        ) {
+
+            serverLogCursor =
+                newCursor;
+
+        }
+
+
+        lines.forEach(
+            serverLine => {
+
+                appendServerLogLine(
+                    serverLine
+                );
+
+            }
+        );
+
+
+        if (
+            !serverLogConnected
+        ) {
+
+            serverLogConnected =
+                true;
+
+
+            logMessage(
+                initialLoad
+                    ?
+                        "Internal server activity stream connected. Showing recent server actions."
+                    :
+                        "Internal server activity stream connected.",
+                "success"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        if (
+            serverLogConnected
+        ) {
+
+            serverLogConnected =
+                false;
+
+
+            logMessage(
+                "Internal server activity stream disconnected: " +
+                error.message,
+                "warning"
+            );
+
+        }
+
+    }
+
+    finally {
+
+        serverLogPolling =
+            false;
+
+    }
+
+}
+
+function clearLog() {
+
+    document.getElementById(
+        "log"
+    ).innerHTML =
+        "";
+
+
+    logPlainText =
+        [];
+
+
+    logMessage(
+        "Log cleared.",
+        "info"
+    );
+
+}
+
+
+async function copyLog() {
+
+    const text =
+        logPlainText.join(
+            "\n"
+        );
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+
+        logMessage(
+            "Log copied to clipboard.",
+            "success"
+        );
+
+    }
+
+    catch (error) {
+
+        logMessage(
+            "Could not copy log: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeHTML(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// CARD STATE
+// ============================================================
+
+function setCardState(
+    cardName,
+    state,
+    detail
+) {
+
+    const card =
+        document.getElementById(
+            "card-" +
+            cardName
+        );
+
+
+    if (
+        !card
+    ) {
+
+        return;
+
+    }
+
+
+    card.classList.remove(
+        "running",
+        "passed",
+        "failed",
+        "partial"
+    );
+
+
+    const badge =
+        card.querySelector(
+            ".statusBadge"
+        );
+
+
+    const detailElement =
+        card.querySelector(
+            ".testCardDetail"
+        );
+
+
+    if (
+        state ===
+        "running"
+    ) {
+
+        card.classList.add(
+            "running"
+        );
+
+
+        badge.textContent =
+            "RUNNING";
+
+    }
+
+    else if (
+        state ===
+        "passed"
+    ) {
+
+        card.classList.add(
+            "passed"
+        );
+
+
+        badge.textContent =
+            "PASSED";
+
+    }
+
+    else if (
+        state ===
+        "failed"
+    ) {
+
+        card.classList.add(
+            "failed"
+        );
+
+
+        badge.textContent =
+            "FAILED";
+
+    }
+
+    else if (state === "partial") {
+
+        card.classList.add("partial");
+        badge.textContent = "PARTIAL";
+
+    }
+
+    else {
+
+        badge.textContent =
+            "NOT TESTED";
+
+    }
+
+
+    if (
+        detail
+    ) {
+
+        detailElement.textContent =
+            detail;
+
+    }
+
+}
+
+
+function resetCards() {
+
+    CARD_IDS.forEach(
+        cardName => {
+
+            setCardState(
+                cardName,
+                "idle",
+                DEFAULT_CARD_DETAILS[
+                    cardName
+                ]
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// HTTP HELPER
+// ============================================================
+
+async function apiRequest(
+    method,
+    path,
+    body = undefined,
+    options = {}
+) {
+
+    const url =
+        SERVER_URL +
+        path;
+
+
+    if (
+        !options.silent
+    ) {
+
+        logMessage(
+            method +
+            " " +
+            path,
+            "request"
+        );
+
+
+        if (
+            body !==
+            undefined
+        ) {
+
+            logMessage(
+                "Payload: " +
+                JSON.stringify(
+                    body
+                ),
+                "info"
+            );
+
+        }
+
+    }
+
+
+    const fetchOptions = {
+
+        method:
+            method,
+
+        headers: {
+            "Content-Type":
+                "application/json",
+                    'X-NAU-Backend-Diagnostic': '1'
+        }
+
+    };
+
+
+    if (
+        body !==
+        undefined
+    ) {
+
+        fetchOptions.body =
+            JSON.stringify(
+                body
+            );
+
+    }
+
+
+    let response;
+
+
+    try {
+
+        response =
+            await fetch(
+                url,
+                fetchOptions
+            );
+
+    }
+
+    catch (error) {
+
+        if (
+            !options.silent
+        ) {
+
+            logMessage(
+                "Network error: " +
+                error.message,
+                "error"
+            );
+
+        }
+
+
+        throw error;
+
+    }
+
+
+    let data;
+
+
+    try {
+
+        data =
+            await response.json();
+
+    }
+
+    catch {
+
+        data =
+            {};
+
+    }
+
+
+    if (
+        !options.silent
+    ) {
+
+        logMessage(
+            "HTTP " +
+            response.status +
+            " " +
+            JSON.stringify(
+                data
+            ),
+            response.ok
+                ?
+                    "response"
+                :
+                    (
+                        options.allowErrorStatus
+                            ?
+                                "warning"
+                            :
+                                "error"
+                    )
+        );
+
+    }
+
+
+    if (
+        !response.ok &&
+        !options.allowErrorStatus
+    ) {
+
+        throw new Error(
+            data.error ||
+            (
+                "HTTP " +
+                response.status
+            )
+        );
+
+    }
+
+
+    return {
+
+        response:
+            response,
+
+        data:
+            data
+
+    };
+
+}
+
+
+// ============================================================
+// ASSERT
+// ============================================================
+
+function requireCondition(
+    condition,
+    message
+) {
+
+    if (
+        !condition
+    ) {
+
+        throw new Error(
+            message
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SERVER STATUS
+// ============================================================
+
+async function checkServer(
+    manual = false
+) {
+
+    const pill =
+        document.getElementById(
+            "serverPill"
+        );
+
+
+    const text =
+        document.getElementById(
+            "serverStatusText"
+        );
+
+
+    pill.className =
+        "serverPill checking";
+
+
+    text.textContent =
+        "Checking server...";
+
+    setCardState(
+        "server",
+        "running",
+        "Checking root server response and JSON health..."
+    );
+
+
+    try {
+
+        const result =
+            await apiRequest(
+                "GET",
+                "/",
+                undefined,
+                {
+                    silent:
+                        (
+                            !manual &&
+                            !suiteRunning
+                        )
+                }
+            );
+
+
+        requireCondition(
+            result.data.status ===
+                "online",
+            "Unexpected root server response."
+        );
+
+
+        pill.className =
+            "serverPill online";
+
+
+        text.textContent =
+            "Server online";
+
+        setCardState(
+            "server",
+            "passed",
+            "Root server response and JSON health check passed."
+        );
+
+
+        if (
+            manual
+        ) {
+
+            logMessage(
+                "Server ping passed.",
+                "success"
+            );
+
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        pill.className =
+            "serverPill";
+
+
+        text.textContent =
+            "Server offline";
+
+        setCardState(
+            "server",
+            "failed",
+            "Root server health check failed: " + error.message
+        );
+
+
+        if (
+            manual
+        ) {
+
+            logMessage(
+                "Server ping failed: " +
+                error.message,
+                "error"
+            );
+
+        }
+
+
+        return false;
+
+    }
+
+}
+
+
+// ============================================================
+// UNIQUE TEST IDS
+// ============================================================
+
+function createTestIds() {
+
+    const token =
+        (
+            Date.now()
+                .toString(
+                    36
+                )
+            +
+            Math.random()
+                .toString(
+                    36
+                )
+                .slice(
+                    2,
+                    6
+                )
+        )
+            .toUpperCase();
+
+
+    return {
+
+        ingredientId:
+            "TEST_ING_" +
+            token,
+
+        recipeId:
+            "TEST_RECIPE_" +
+            token,
+
+        promoId:
+            "TESTPROMO_" +
+            token,
+
+        transactionId:
+            "BACKENDTEST_" +
+            token,
+
+        refundTransactionId:
+            "REFUNDTEST_" +
+            token,
+
+        voidTransactionId:
+            "VOIDTEST_" +
+            token
+
+    };
+
+}
+
+
+// ============================================================
+// INGREDIENT TEST
+// ============================================================
+
+async function createAndTestIngredient(
+    ids,
+    state
+) {
+
+    setCardState(
+        "ingredients",
+        "running",
+        "Creating temporary ingredient..."
+    );
+
+
+    logSection(
+        "INGREDIENTS API"
+    );
+
+
+    const createPayload = {
+
+        id:
+            ids.ingredientId,
+
+        category:
+            "TEST",
+
+        name:
+            "Backend API Test Ingredient",
+
+        type:
+            "TEST",
+
+        unit:
+            "ml",
+
+        stock:
+            125,
+
+        cost_per_unit:
+            1000,
+
+        SUB:
+            2500,
+
+        reorder_level:
+            10,
+
+        notes:
+            "Temporary backend API test. Safe to delete."
+
+    };
+
+
+    await apiRequest(
+        "POST",
+        "/api/ingredients",
+        createPayload
+    );
+
+
+    state.ingredientCreated =
+        true;
+
+
+    const readResult =
+        await apiRequest(
+            "GET",
+            "/api/ingredients/" +
+            encodeURIComponent(
+                ids.ingredientId
+            )
+        );
+
+
+    requireCondition(
+        readResult.data.ingredient &&
+        readResult.data.ingredient.id ===
+            ids.ingredientId,
+        "Created ingredient could not be read back."
+    );
+
+
+    const editPayload = {
+
+        id:
+            ids.ingredientId,
+
+        category:
+            "TEST",
+
+        name:
+            "Backend API Test Ingredient Edited",
+
+        type:
+            "TEST",
+
+        unit:
+            "ml",
+
+        stock:
+            150,
+
+        cost_per_unit:
+            1100,
+
+        SUB:
+            2600,
+
+        reorder_level:
+            12,
+
+        notes:
+            "Temporary backend API test. Edited successfully."
+
+    };
+
+
+    await apiRequest(
+        "PUT",
+        "/api/ingredients/" +
+        encodeURIComponent(
+            ids.ingredientId
+        ),
+        editPayload
+    );
+
+
+    const verifyResult =
+        await apiRequest(
+            "GET",
+            "/api/ingredients/" +
+            encodeURIComponent(
+                ids.ingredientId
+            )
+        );
+
+
+    requireCondition(
+        verifyResult.data.ingredient &&
+        verifyResult.data.ingredient.name ===
+            "Backend API Test Ingredient Edited" &&
+        Number(
+            verifyResult.data.ingredient.stock
+        ) ===
+            150 &&
+        Number(
+            verifyResult.data.ingredient.SUB
+        ) ===
+            2600,
+        "Ingredient edit did not persist correctly."
+    );
+
+
+    state.ingredientCrudVerified =
+        true;
+
+
+    setCardState(
+        "ingredients",
+        "running",
+        "Create/read/edit verified. Waiting for final delete + cleanup verification."
+    );
+
+
+    logMessage(
+        "Ingredient create/read/edit checks passed.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// RECIPE TEST
+// ============================================================
+
+async function createAndTestRecipe(
+    ids,
+    state
+) {
+
+    setCardState(
+        "recipes",
+        "running",
+        "Creating temporary recipe..."
+    );
+
+
+    logSection(
+        "RECIPES API"
+    );
+
+
+    requireCondition(
+        state.ingredientCreated,
+        "Ingredient test fixture is unavailable."
+    );
+
+
+    const createPayload = {
+
+        id:
+            ids.recipeId,
+
+        name:
+            "Backend API Test Recipe",
+
+        COST_P:
+            1100,
+
+        SALE_P:
+            5000,
+
+        ingredients: [
+            {
+                id:
+                    ids.ingredientId,
+
+                amount:
+                    1
+            }
+        ]
+
+    };
+
+
+    await apiRequest(
+        "POST",
+        "/api/recipes",
+        createPayload
+    );
+
+
+    state.recipeCreated =
+        true;
+
+
+    const readResult =
+        await apiRequest(
+            "GET",
+            "/api/recipes/" +
+            encodeURIComponent(
+                ids.recipeId
+            )
+        );
+
+
+    requireCondition(
+        readResult.data.recipe &&
+        readResult.data.recipe.id ===
+            ids.recipeId,
+        "Created recipe could not be read back."
+    );
+
+
+    const editPayload = {
+
+        name:
+            "Backend API Test Recipe Edited",
+
+        COST_P:
+            1200,
+
+        SALE_P:
+            5500,
+
+        ingredients: [
+            {
+                id:
+                    ids.ingredientId,
+
+                amount:
+                    1
+            }
+        ]
+
+    };
+
+
+    await apiRequest(
+        "PUT",
+        "/api/recipes/" +
+        encodeURIComponent(
+            ids.recipeId
+        ),
+        editPayload
+    );
+
+
+    const verifyResult =
+        await apiRequest(
+            "GET",
+            "/api/recipes/" +
+            encodeURIComponent(
+                ids.recipeId
+            )
+        );
+
+
+    requireCondition(
+        verifyResult.data.recipe &&
+        verifyResult.data.recipe.name ===
+            "Backend API Test Recipe Edited" &&
+        Number(
+            verifyResult.data.recipe.SALE_P
+        ) ===
+            5500,
+        "Recipe edit did not persist correctly."
+    );
+
+
+    state.recipeCrudVerified =
+        true;
+
+
+    setCardState(
+        "recipes",
+        "running",
+        "Create/read/edit verified. Waiting for final delete + cleanup verification."
+    );
+
+
+    logMessage(
+        "Recipe create/read/edit checks passed.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// PROMO TEST
+// ============================================================
+
+async function createAndTestPromo(
+    ids,
+    state
+) {
+
+    setCardState(
+        "promo",
+        "running",
+        "Creating temporary promo code..."
+    );
+
+
+    logSection(
+        "PROMO API"
+    );
+
+
+    const createPayload = {
+
+        id:
+            ids.promoId,
+
+        name:
+            "Backend API Test Promo",
+
+        type:
+            "PERCENT",
+
+        value:
+            10,
+
+        active:
+            true
+
+    };
+
+
+    await apiRequest(
+        "POST",
+        "/api/promocodes",
+        createPayload
+    );
+
+
+    state.promoCreated =
+        true;
+
+
+    const readResult =
+        await apiRequest(
+            "GET",
+            "/api/promocodes/" +
+            encodeURIComponent(
+                ids.promoId
+            )
+        );
+
+
+    requireCondition(
+        readResult.data.promocode &&
+        readResult.data.promocode.id ===
+            ids.promoId,
+        "Created promo code could not be read back."
+    );
+
+
+    const editPayload = {
+
+        id:
+            ids.promoId,
+
+        name:
+            "Backend API Test Promo Edited",
+
+        type:
+            "PERCENT",
+
+        value:
+            15,
+
+        active:
+            true
+
+    };
+
+
+    await apiRequest(
+        "PUT",
+        "/api/promocodes/" +
+        encodeURIComponent(
+            ids.promoId
+        ),
+        editPayload
+    );
+
+
+    const verifyResult =
+        await apiRequest(
+            "GET",
+            "/api/promocodes/" +
+            encodeURIComponent(
+                ids.promoId
+            )
+        );
+
+
+    requireCondition(
+        verifyResult.data.promocode &&
+        verifyResult.data.promocode.name ===
+            "Backend API Test Promo Edited" &&
+        Number(
+            verifyResult.data.promocode.value
+        ) ===
+            15,
+        "Promo edit did not persist correctly."
+    );
+
+
+    state.promoCrudVerified =
+        true;
+
+
+    setCardState(
+        "promo",
+        "running",
+        "Create/read/edit verified. Waiting for final delete + cleanup verification."
+    );
+
+
+    logMessage(
+        "Promo create/read/edit checks passed.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// SHOT TEST
+// ============================================================
+
+async function testShotSpecial() {
+
+    setCardState(
+        "shot",
+        "running",
+        "Checking server-managed SHOT recipe..."
+    );
+
+
+    logSection(
+        "SHOT SPECIAL RECIPE"
+    );
+
+
+    const result =
+        await apiRequest(
+            "GET",
+            "/api/recipes/SHOT"
+        );
+
+
+    const recipe =
+        result.data.recipe;
+
+
+    requireCondition(
+        recipe &&
+        String(
+            recipe.id ||
+            ""
+        ).toUpperCase() ===
+            "SHOT" &&
+        String(
+            recipe.special_type ||
+            ""
+        ).toUpperCase() ===
+            "STANDALONE_INGREDIENT" &&
+        recipe.system ===
+            true,
+        "SHOT special recipe markers are missing or invalid."
+    );
+
+
+    setCardState(
+        "shot",
+        "passed",
+        "SHOT exists and is correctly marked as a server-managed standalone ingredient recipe."
+    );
+
+
+    logMessage(
+        "SHOT special recipe check passed.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// SALES HISTORY TEST
+// ============================================================
+
+async function testSalesHistory() {
+
+    setCardState(
+        "sales",
+        "running",
+        "Reading sales history..."
+    );
+
+
+    logSection(
+        "SALES HISTORY API"
+    );
+
+
+    const result =
+        await apiRequest(
+            "GET",
+            "/api/sales/history"
+        );
+
+
+    requireCondition(
+        result.data.success ===
+            true &&
+        Array.isArray(
+            result.data.sales
+        ),
+        "Sales history response did not contain a sales array."
+    );
+
+
+    setCardState(
+        "sales",
+        "passed",
+        "Sales history API returned " +
+        result.data.sales.length +
+        " sale record(s)."
+    );
+
+
+    logMessage(
+        "Sales history response shape passed.",
+        "success"
+    );
+
+
+    return result.data.sales;
+
+}
+
+
+// ============================================================
+// PAYMENT TEST
+// ============================================================
+
+async function testPaymentApi(
+    ids,
+    state
+) {
+
+    setCardState(
+        "payment",
+        "running",
+        "Running non-destructive payment validation..."
+    );
+
+
+    logSection(
+        "PAYMENT API"
+    );
+
+
+    requireCondition(
+        state.recipeCreated,
+        "Recipe test fixture is unavailable."
+    );
+
+
+    /*
+        Use a deliberately impossible quantity.
+
+        This pushes the request through:
+        - endpoint parsing
+        - transaction validation
+        - table validation
+        - recipe loading
+        - ingredient loading
+        - pricing preparation
+        - inventory requirement calculation
+
+        It then stops at insufficient stock BEFORE inventory writes,
+        pending-sale journal creation or sales-history commit.
+    */
+
+    const payload = {
+
+        transaction_id:
+            ids.transactionId,
+
+        table:
+            "Bar 1",
+
+        opened_at:
+            new Date().toISOString(),
+
+        payment_method:
+            "CASH",
+
+        items: [
+            {
+                recipe_id:
+                    ids.recipeId,
+
+                quantity:
+                    999999,
+
+                substitutions:
+                    []
+            }
+        ]
+
+    };
+
+
+    const result =
+        await apiRequest(
+            "POST",
+            "/api/sales/finalize",
+            payload,
+            {
+                allowErrorStatus:
+                    true
+            }
+        );
+
+
+    const errorText =
+        String(
+            result.data.error ||
+            ""
+        );
+
+
+    requireCondition(
+        result.response.status ===
+            400 &&
+        result.data.success ===
+            false &&
+        errorText.toLowerCase().includes(
+            "insufficient stock"
+        ),
+        "Payment API did not reach the expected inventory validation path."
+    );
+
+
+    const historyResult =
+        await apiRequest(
+            "GET",
+            "/api/sales/history"
+        );
+
+
+    const accidentalSale =
+        Array.isArray(
+            historyResult.data.sales
+        )
+            ?
+                historyResult.data.sales.find(
+                    sale =>
+                        String(
+                            sale.transaction_id ||
+                            ""
+                        ).toUpperCase() ===
+                        ids.transactionId
+                )
+            :
+                null;
+
+
+    requireCondition(
+        !accidentalSale,
+        "The non-destructive payment test unexpectedly created a sale."
+    );
+
+
+    setCardState(
+        "payment",
+        "passed",
+        "Finalize endpoint reached inventory validation and rejected safely. No sale was committed."
+    );
+
+
+    logMessage(
+        "Payment validation path passed with no permanent sale created.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// SAFE SALE ADJUSTMENT TEST HELPERS
+// ============================================================
+
+function historyContainsTransaction(
+    salesList,
+    transactionId
+) {
+
+    if (
+        !Array.isArray(
+            salesList
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    const normalizedId =
+        String(
+            transactionId ||
+            ""
+        )
+            .trim()
+            .toUpperCase();
+
+
+    return salesList.some(
+        sale =>
+            String(
+                sale &&
+                sale.transaction_id ||
+                ""
+            )
+                .trim()
+                .toUpperCase()
+            ===
+            normalizedId
+    );
+
+}
+
+
+// ============================================================
+// REFUND API TEST
+// ============================================================
+
+async function testRefundApi(
+    ids
+) {
+
+    setCardState(
+        "refund",
+        "running",
+        "Checking refund route and transaction lookup..."
+    );
+
+
+    logSection(
+        "REFUND API"
+    );
+
+
+    const historyBefore =
+        await apiRequest(
+            "GET",
+            "/api/sales/history"
+        );
+
+
+    const salesBefore =
+        Array.isArray(
+            historyBefore.data.sales
+        )
+            ?
+                historyBefore.data.sales
+            :
+                [];
+
+
+    requireCondition(
+        !historyContainsTransaction(
+            salesBefore,
+            ids.refundTransactionId
+        ),
+        "Generated refund test transaction unexpectedly already exists."
+    );
+
+
+    const result =
+        await apiRequest(
+            "POST",
+            "/api/sales/" +
+                encodeURIComponent(
+                    ids.refundTransactionId
+                ) +
+                "/refund",
+            {},
+            {
+                allowErrorStatus:
+                    true
+            }
+        );
+
+
+    const errorText =
+        String(
+            result.data.error ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    requireCondition(
+        result.response.status ===
+            404
+        &&
+        result.data.success ===
+            false
+        &&
+        (
+            result.data.not_found ===
+                true
+            ||
+            errorText.includes(
+                "sale not found"
+            )
+        ),
+        "Refund endpoint did not reach the expected sale lookup path."
+    );
+
+
+    const historyAfter =
+        await apiRequest(
+            "GET",
+            "/api/sales/history"
+        );
+
+
+    const salesAfter =
+        Array.isArray(
+            historyAfter.data.sales
+        )
+            ?
+                historyAfter.data.sales
+            :
+                [];
+
+
+    requireCondition(
+        !historyContainsTransaction(
+            salesAfter,
+            ids.refundTransactionId
+        ),
+        "Refund route test unexpectedly created a permanent sale."
+    );
+
+
+    setCardState(
+        "refund",
+        "passed",
+        "Refund route, transaction validation and sale lookup passed safely. No sale was changed."
+    );
+
+
+    logMessage(
+        "Refund API safe lookup test passed with no permanent sale changed.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// VOID API TEST
+// ============================================================
+
+async function testVoidApi(
+    ids
+) {
+
+    setCardState(
+        "void",
+        "running",
+        "Checking void route and transaction lookup..."
+    );
+
+
+    logSection(
+        "VOID API"
+    );
+
+
+    const historyBefore =
+        await apiRequest(
+            "GET",
+            "/api/sales/history"
+        );
+
+
+    const salesBefore =
+        Array.isArray(
+            historyBefore.data.sales
+        )
+            ?
+                historyBefore.data.sales
+            :
+                [];
+
+
+    requireCondition(
+        !historyContainsTransaction(
+            salesBefore,
+            ids.voidTransactionId
+        ),
+        "Generated void test transaction unexpectedly already exists."
+    );
+
+
+    const result =
+        await apiRequest(
+            "POST",
+            "/api/sales/" +
+                encodeURIComponent(
+                    ids.voidTransactionId
+                ) +
+                "/void",
+            {},
+            {
+                allowErrorStatus:
+                    true
+            }
+        );
+
+
+    const errorText =
+        String(
+            result.data.error ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    requireCondition(
+        result.response.status ===
+            404
+        &&
+        result.data.success ===
+            false
+        &&
+        (
+            result.data.not_found ===
+                true
+            ||
+            errorText.includes(
+                "sale not found"
+            )
+        ),
+        "Void endpoint did not reach the expected sale lookup path."
+    );
+
+
+    const historyAfter =
+        await apiRequest(
+            "GET",
+            "/api/sales/history"
+        );
+
+
+    const salesAfter =
+        Array.isArray(
+            historyAfter.data.sales
+        )
+            ?
+                historyAfter.data.sales
+            :
+                [];
+
+
+    requireCondition(
+        !historyContainsTransaction(
+            salesAfter,
+            ids.voidTransactionId
+        ),
+        "Void route test unexpectedly created a permanent sale."
+    );
+
+
+    setCardState(
+        "void",
+        "passed",
+        "Void route, transaction validation and sale lookup passed safely. No inventory or sale was changed."
+    );
+
+
+    logMessage(
+        "Void API safe lookup test passed with no permanent sale or inventory changed.",
+        "success"
+    );
+
+}
+
+
+// ============================================================
+// CLEANUP
+// ============================================================
+
+async function cleanupFixtures(
+    ids,
+    state
+) {
+
+    setCardState(
+        "cleanup",
+        "running",
+        "Deleting temporary test resources..."
+    );
+
+
+    logSection(
+        "CLEANUP"
+    );
+
+
+    const cleanupErrors =
+        [];
+
+
+    if (
+        state.recipeCreated
+    ) {
+
+        try {
+
+            await apiRequest(
+                "DELETE",
+                "/api/recipes/" +
+                encodeURIComponent(
+                    ids.recipeId
+                )
+            );
+
+
+            state.recipeDeleted =
+                true;
+
+        }
+
+        catch (error) {
+
+            cleanupErrors.push(
+                "Recipe: " +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    if (
+        state.promoCreated
+    ) {
+
+        try {
+
+            await apiRequest(
+                "DELETE",
+                "/api/promocodes/" +
+                encodeURIComponent(
+                    ids.promoId
+                )
+            );
+
+
+            state.promoDeleted =
+                true;
+
+        }
+
+        catch (error) {
+
+            cleanupErrors.push(
+                "Promo: " +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    if (
+        state.ingredientCreated
+    ) {
+
+        try {
+
+            await apiRequest(
+                "DELETE",
+                "/api/ingredients/" +
+                encodeURIComponent(
+                    ids.ingredientId
+                )
+            );
+
+
+            state.ingredientDeleted =
+                true;
+
+        }
+
+        catch (error) {
+
+            cleanupErrors.push(
+                "Ingredient: " +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    /*
+        Verify through list endpoints, because GET /api/ingredients/{value}
+        also doubles as a category route when the ingredient does not exist.
+    */
+
+    try {
+
+        const recipeList =
+            await apiRequest(
+                "GET",
+                "/api/recipes"
+            );
+
+
+        const recipes =
+            Array.isArray(
+                recipeList.data.recipes
+            )
+                ?
+                    recipeList.data.recipes
+                :
+                    [];
+
+
+        requireCondition(
+            !recipes.some(
+                recipe =>
+                    String(
+                        recipe.id ||
+                        ""
+                    ).toUpperCase() ===
+                    ids.recipeId
+            ),
+            "Temporary recipe still exists after cleanup."
+        );
+
+    }
+
+    catch (error) {
+
+        cleanupErrors.push(
+            "Recipe cleanup verification: " +
+            error.message
+        );
+
+    }
+
+
+    try {
+
+        const promoList =
+            await apiRequest(
+                "GET",
+                "/api/promocodes"
+            );
+
+
+        const promos =
+            Array.isArray(
+                promoList.data.promocodes
+            )
+                ?
+                    promoList.data.promocodes
+                :
+                    [];
+
+
+        requireCondition(
+            !promos.some(
+                promo =>
+                    String(
+                        promo.id ||
+                        ""
+                    ).toUpperCase() ===
+                    ids.promoId
+            ),
+            "Temporary promo still exists after cleanup."
+        );
+
+    }
+
+    catch (error) {
+
+        cleanupErrors.push(
+            "Promo cleanup verification: " +
+            error.message
+        );
+
+    }
+
+
+    try {
+
+        const ingredientList =
+            await apiRequest(
+                "GET",
+                "/api/ingredients"
+            );
+
+
+        const ingredientItems =
+            Array.isArray(
+                ingredientList.data.ingredients
+            )
+                ?
+                    ingredientList.data.ingredients
+                :
+                    [];
+
+
+        requireCondition(
+            !ingredientItems.some(
+                ingredient =>
+                    String(
+                        ingredient.id ||
+                        ""
+                    ).toUpperCase() ===
+                    ids.ingredientId
+            ),
+            "Temporary ingredient still exists after cleanup."
+        );
+
+    }
+
+    catch (error) {
+
+        cleanupErrors.push(
+            "Ingredient cleanup verification: " +
+            error.message
+        );
+
+    }
+
+
+    if (
+        cleanupErrors.length >
+        0
+    ) {
+
+        setCardState(
+            "cleanup",
+            "failed",
+            cleanupErrors.join(
+                " | "
+            )
+        );
+
+
+        logMessage(
+            "Cleanup failed: " +
+            cleanupErrors.join(
+                " | "
+            ),
+            "error"
+        );
+
+
+        return false;
+
+    }
+
+
+    setCardState(
+        "cleanup",
+        "passed",
+        "All temporary test resources were deleted and verified absent."
+    );
+
+
+    logMessage(
+        "Temporary resource cleanup passed.",
+        "success"
+    );
+
+
+    return true;
+
+}
+
+
+// ============================================================
+// COMPLETE CRUD CARDS AFTER CLEANUP
+// ============================================================
+
+function finalizeCrudCardStates(
+    state
+) {
+
+    if (
+        state.ingredientCrudVerified &&
+        state.ingredientDeleted
+    ) {
+
+        setCardState(
+            "ingredients",
+            "passed",
+            "Create, read, edit, verify and delete all passed. Temporary ingredient removed."
+        );
+
+    }
+
+    else if (
+        state.ingredientCreated ||
+        state.ingredientCrudVerified
+    ) {
+
+        setCardState(
+            "ingredients",
+            "failed",
+            "Ingredient operations did not complete cleanly."
+        );
+
+    }
+
+
+    if (
+        state.recipeCrudVerified &&
+        state.recipeDeleted
+    ) {
+
+        setCardState(
+            "recipes",
+            "passed",
+            "Create, read, edit, verify and delete all passed. Temporary recipe removed."
+        );
+
+    }
+
+    else if (
+        state.recipeCreated ||
+        state.recipeCrudVerified
+    ) {
+
+        setCardState(
+            "recipes",
+            "failed",
+            "Recipe operations did not complete cleanly."
+        );
+
+    }
+
+
+    if (
+        state.promoCrudVerified &&
+        state.promoDeleted
+    ) {
+
+        setCardState(
+            "promo",
+            "passed",
+            "Create, read, edit, verify and delete all passed. Temporary promo removed."
+        );
+
+    }
+
+    else if (
+        state.promoCreated ||
+        state.promoCrudVerified
+    ) {
+
+        setCardState(
+            "promo",
+            "failed",
+            "Promo operations did not complete cleanly."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// GOOGLE API: CHECK CONNECTION WITHOUT WRITING SALES OR SHEETS
+// ============================================================
+
+let googleTestRunning = false;
+
+async function testGoogleApi(fromSuite = false) {
+    if (googleTestRunning || (suiteRunning && !fromSuite)) return;
+
+    const button = document.getElementById("googleTestButton");
+    googleTestRunning = true;
+    button.disabled = true;
+    setCardState("google", "running", "Checking Google connection...");
+    logSection("GOOGLE FINANCE API");
+
+    try {
+        const {data} = await apiRequest("POST", "/api/finance/google/test", {});
+        requireCondition(data.success === true && data.drive_connected === true,
+            "Google Drive connection was not confirmed.");
+
+        if (data.sheets_checked === true) {
+            const detail = data.message + " Report: " + data.spreadsheet + ".";
+            setCardState("google", "passed", detail);
+            logMessage(detail, "success");
+        } else {
+            const detail = data.message || "Drive connected; no report to check yet.";
+            setCardState("google", "partial", detail);
+            logMessage(detail, "warning");
+        }
+    } catch (error) {
+        setCardState("google", "failed", error.message);
+        logMessage("Google Finance API failed: " + error.message, "error");
+    } finally {
+        googleTestRunning = false;
+        button.disabled = false;
+    }
+}
+
+
+// ============================================================
+// RUN ALL
+// ============================================================
+
+
+async function rawDiagnosticRequest(path, options = {}) {
+    const headers = Object.assign(
+        {
+            "Content-Type": "application/json",
+            "X-NAU-Backend-Diagnostic": "1"
+        },
+        options.headers || {}
+    );
+
+    const response = await fetch(
+        SERVER_URL + path,
+        Object.assign({}, options, {headers})
+    );
+
+    let payload = null;
+    const text = await response.text();
+
+    if (text) {
+        try {
+            payload = JSON.parse(text);
+        } catch (_) {
+            throw new Error(
+                (options.method || "GET") + " " + path +
+                " returned non-JSON data."
+            );
+        }
+    }
+
+    return {response, payload};
+}
+
+
+async function testCompleteClientServerCoverage() {
+    const card = document.getElementById("card-full-coverage");
+    const detail = document.getElementById("fullCoverageDetail");
+    card.classList.remove("passed", "failed", "partial");
+    card.querySelector(".statusBadge").textContent = "RUNNING";
+
+    const checks = [];
+    const add = (name, ok, info = "") => {
+        checks.push({name, ok, info});
+        logMessage(
+            (ok ? "PASS | " : "FAIL | ") + name +
+            (info ? " | " + info : ""),
+            ok ? "success" : "error"
+        );
+    };
+
+    try {
+        // Public health + browser JSON contract.
+        {
+            const {response, payload} = await rawDiagnosticRequest("/");
+            add("GET / health + JSON", response.ok &&
+                payload && payload.status === "online",
+                "HTTP " + response.status);
+        }
+
+        // CORS preflight used by browser clients.
+        {
+            const response = await fetch(SERVER_URL + "/api/ingredients", {
+                method: "OPTIONS",
+                headers: {
+                    "Access-Control-Request-Method": "POST",
+                    "Access-Control-Request-Headers":
+                        "Content-Type, X-NAU-Backend-Diagnostic"
+                }
+            });
+            add("OPTIONS CORS preflight", response.status === 204,
+                "HTTP " + response.status);
+        }
+
+        // Read-only API families.
+        for (const path of [
+            "/api/ingredients",
+            "/api/recipes",
+            "/api/promocodes",
+            "/api/customers?query=__NAU_DIAG_MISSING__",
+            "/api/sales/history",
+            "/api/server/log?tail=5"
+        ]) {
+            const {response} = await rawDiagnosticRequest(path);
+            add("GET " + path, response.ok, "HTTP " + response.status);
+        }
+
+        // Special recipe route.
+        {
+            const {response} = await rawDiagnosticRequest("/api/recipes/SHOT");
+            add("GET /api/recipes/SHOT", response.ok,
+                "HTTP " + response.status);
+        }
+
+        // Finance endpoints. A missing Google login/config is an environment
+        // condition, not a broken HTTP contract. The route must answer JSON.
+        for (const spec of [
+            ["GET", "/api/finance/google/sheet"],
+            ["POST", "/api/finance/google/test"],
+            ["POST", "/api/finance/sync"]
+        ]) {
+            const [method, path] = spec;
+            const {response, payload} = await rawDiagnosticRequest(
+                path,
+                method === "GET" ? {} : {
+                    method,
+                    body: JSON.stringify({})
+                }
+            );
+            const contractOk =
+                payload !== null &&
+                [200, 400, 401, 409, 503].includes(response.status);
+            add(
+                method + " " + path,
+                contractOk,
+                "HTTP " + response.status +
+                (response.ok ? "" : " (environment/config response accepted)")
+            );
+        }
+
+        // Validation paths: they MUST reject invalid data without committing it.
+        {
+            const {response} = await rawDiagnosticRequest(
+                "/api/sales/finalize",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        table: "__NAU_DIAG_INVALID__",
+                        items: []
+                    })
+                }
+            );
+            add("POST sales/finalize validation",
+                response.status >= 400 && response.status < 500,
+                "HTTP " + response.status);
+        }
+
+        // Dynamic read contracts.
+        // Ingredients are special: GET /api/ingredients/{value} doubles as
+        // an ingredient-id route and a category route. Therefore a missing
+        // ingredient/category legitimately returns HTTP 200 with an empty
+        // result in this server contract. Recipes/promos use normal 404s.
+        {
+            const path = "/api/ingredients/__NAU_DIAG_MISSING__";
+            const {response} = await rawDiagnosticRequest(path);
+            add(
+                "ingredient dynamic GET contract " + path,
+                response.status === 200 || response.status === 404,
+                "HTTP " + response.status
+            );
+        }
+
+        for (const path of [
+            "/api/promocodes/__NAU_DIAG_MISSING__",
+            "/api/recipes/__NAU_DIAG_MISSING__"
+        ]) {
+            const {response} = await rawDiagnosticRequest(path);
+            add("404 contract " + path, response.status === 404,
+                "HTTP " + response.status);
+        }
+
+        for (const path of [
+            "/api/customers/__NAU_DIAG_MISSING__",
+            "/api/customers/__NAU_DIAG_MISSING__/history"
+        ]) {
+            const {response} = await rawDiagnosticRequest(path);
+            add("404 customer contract " + path, response.status === 404,
+                "HTTP " + response.status);
+        }
+
+        {
+            const {response} = await rawDiagnosticRequest(
+                "/api/customers",
+                {
+                    method: "POST",
+                    body: JSON.stringify({})
+                }
+            );
+            add(
+                "POST customer validation",
+                response.status >= 400 && response.status < 500,
+                "HTTP " + response.status
+            );
+        }
+
+        // Dynamic mutation route parsing using missing IDs: proves PUT/DELETE
+        // reach the correct handlers without touching real data.
+        for (const method of ["PUT", "DELETE"]) {
+            for (const path of [
+                "/api/ingredients/__NAU_DIAG_MISSING__",
+                "/api/promocodes/__NAU_DIAG_MISSING__",
+                "/api/recipes/__NAU_DIAG_MISSING__",
+                "/api/customers/__NAU_DIAG_MISSING__"
+            ]) {
+                const options = {method};
+                if (method === "PUT") {
+                    options.body = JSON.stringify({});
+                }
+                const {response} = await rawDiagnosticRequest(path, options);
+                add(
+                    method + " route " + path,
+                    response.status >= 400 && response.status < 500,
+                    "HTTP " + response.status
+                );
+            }
+        }
+
+        // Refund/void dynamic route parsing with a guaranteed missing sale.
+        for (const action of ["refund", "void"]) {
+            const path =
+                "/api/sales/__NAU_DIAG_MISSING_SALE__/" + action;
+            const {response} = await rawDiagnosticRequest(path, {
+                method: "POST",
+                body: JSON.stringify({})
+            });
+            add(
+                "POST sales/" + action + " route",
+                response.status >= 400 && response.status < 500,
+                "HTTP " + response.status
+            );
+        }
+
+        // Unknown route contract.
+        {
+            const {response, payload} = await rawDiagnosticRequest(
+                "/api/__nau_diagnostic_missing_route__"
+            );
+            add("Unknown API returns JSON 404",
+                response.status === 404 && payload !== null,
+                "HTTP " + response.status);
+        }
+
+        const failed = checks.filter(item => !item.ok);
+        if (failed.length) {
+            card.classList.add("failed");
+            card.querySelector(".statusBadge").textContent = "FAILED";
+            detail.textContent =
+                (checks.length - failed.length) + "/" + checks.length +
+                " checks passed. " + failed.length + " failed.";
+            throw new Error(
+                failed.length + " complete-coverage check(s) failed."
+            );
+        }
+
+        card.classList.add("passed");
+        card.querySelector(".statusBadge").textContent = "PASSED";
+        detail.textContent =
+            checks.length + "/" + checks.length +
+            " client-server/API contract checks passed.";
+        return checks;
+
+    } catch (error) {
+        if (!card.classList.contains("failed")) {
+            card.classList.add("failed");
+            card.querySelector(".statusBadge").textContent = "FAILED";
+        }
+        throw error;
+    }
+}
+
+
+
+async function testApiOnlyCoverage() {
+    const card =
+        document.getElementById("card-full-coverage") ||
+        document.getElementById("card-server");
+
+    if (card) {
+        card.classList.remove("passed", "failed", "partial");
+        const badge = card.querySelector(".statusBadge");
+        if (badge) badge.textContent = "RUNNING";
+    }
+
+    const checks = [];
+
+    const check = async (label, path, options = {}, accepted = null) => {
+        logMessage(label, "info");
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2000);
+
+        try {
+            const result = await rawDiagnosticRequest(
+                path,
+                Object.assign({}, options, {signal: controller.signal})
+            );
+
+            const status = result.response.status;
+            const ok = accepted
+                ? accepted.includes(status)
+                : result.response.ok;
+
+            checks.push({label, ok, status});
+
+            logMessage(
+                (ok ? "PASS | " : "FAIL | ") +
+                label + " | HTTP " + status,
+                ok ? "success" : "error"
+            );
+
+            // Give the browser a chance to repaint between requests.
+            await new Promise(resolve => setTimeout(resolve, 0));
+            return result;
+        } catch (error) {
+            checks.push({label, ok: false, status: 0});
+            logMessage(
+                "FAIL | " + label + " | " +
+                (error.name === "AbortError" ? "2s timeout" : error.message),
+                "error"
+            );
+            return null;
+        } finally {
+            clearTimeout(timer);
+        }
+    };
+
+    // Public server / browser contract.
+    await check("GET /", "/");
+    await check("GET ingredients", "/api/ingredients");
+    await check("GET recipes", "/api/recipes");
+    await check("GET SHOT special recipe", "/api/recipes/SHOT");
+    await check("GET BESPOKE special recipe", "/api/recipes/BESPOKE",
+        {}, [200, 404]);
+    await check("GET promo codes", "/api/promocodes");
+    await check(
+        "GET customer search",
+        "/api/customers?query=" + encodeURIComponent("__NAU_API_TEST_MISSING__"),
+        {},
+        [200]
+    );
+    await check("GET sales history", "/api/sales/history");
+    await check("GET server log", "/api/server/log?tail=5");
+
+    // Google/Finance GET is read-only. A configuration response is still a
+    // valid reachable API contract.
+    await check(
+        "GET Google Finance sheet",
+        "/api/finance/google/sheet",
+        {},
+        [200, 400, 401, 404, 409, 503]
+    );
+
+    // Google connection test is explicitly non-mutating in the server.
+    await check(
+        "POST Google connection test",
+        "/api/finance/google/test",
+        {method: "POST", body: JSON.stringify({})},
+        [200, 400, 401, 409, 503]
+    );
+
+    // Mutation APIs are tested only with guaranteed-missing IDs / invalid
+    // payloads. This exercises routing + validation without creating records.
+    const missing = "__NAU_API_TEST_MISSING__";
+
+    await check(
+        "GET ingredient dynamic route",
+        "/api/ingredients/" + missing,
+        {},
+        [200, 404]
+    );
+    await check(
+        "PUT ingredient validation route",
+        "/api/ingredients/" + missing,
+        {method: "PUT", body: JSON.stringify({})},
+        [400, 404]
+    );
+    await check(
+        "DELETE ingredient missing route",
+        "/api/ingredients/" + missing,
+        {method: "DELETE"},
+        [400, 404]
+    );
+
+    await check(
+        "GET missing recipe route",
+        "/api/recipes/" + missing,
+        {},
+        [404]
+    );
+    await check(
+        "PUT recipe validation route",
+        "/api/recipes/" + missing,
+        {method: "PUT", body: JSON.stringify({})},
+        [400, 404]
+    );
+    await check(
+        "DELETE recipe missing route",
+        "/api/recipes/" + missing,
+        {method: "DELETE"},
+        [400, 404]
+    );
+
+    await check(
+        "GET missing promo route",
+        "/api/promocodes/" + missing,
+        {},
+        [404]
+    );
+    await check(
+        "PUT promo validation route",
+        "/api/promocodes/" + missing,
+        {method: "PUT", body: JSON.stringify({})},
+        [400, 404]
+    );
+    await check(
+        "DELETE promo missing route",
+        "/api/promocodes/" + missing,
+        {method: "DELETE"},
+        [400, 404]
+    );
+
+    await check(
+        "GET missing customer route",
+        "/api/customers/" + missing,
+        {},
+        [404]
+    );
+
+    await check(
+        "GET missing customer history route",
+        "/api/customers/" + missing + "/history",
+        {},
+        [404]
+    );
+
+    await check(
+        "POST customer validation",
+        "/api/customers",
+        {method: "POST", body: JSON.stringify({})},
+        [400, 422]
+    );
+
+    await check(
+        "PUT customer missing route",
+        "/api/customers/" + missing,
+        {
+            method: "PUT",
+            body: JSON.stringify({
+                name: "NAU Diagnostic",
+                phone: "000000"
+            })
+        },
+        [404]
+    );
+
+    await check(
+        "DELETE customer missing route",
+        "/api/customers/" + missing,
+        {method: "DELETE"},
+        [404]
+    );
+
+    await check(
+        "POST sales finalize validation",
+        "/api/sales/finalize",
+        {
+            method: "POST",
+            body: JSON.stringify({table: "", items: []})
+        },
+        [400, 422]
+    );
+
+    await check(
+        "POST sales invalid payment method",
+        "/api/sales/finalize",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                transaction_id: "NAU-DIAG-PAYMENT",
+                table: "Bar 1",
+                opened_at: new Date().toISOString(),
+                payment_method: "CARD",
+                items: []
+            })
+        },
+        [400, 422]
+    );
+
+    await check(
+        "POST refund missing-sale route",
+        "/api/sales/" + missing + "/refund",
+        {method: "POST", body: JSON.stringify({})},
+        [400, 404]
+    );
+
+    await check(
+        "POST void missing-sale route",
+        "/api/sales/" + missing + "/void",
+        {method: "POST", body: JSON.stringify({})},
+        [400, 404]
+    );
+
+    // OPTIONS tests the browser CORS path without changing any data.
+    await check(
+        "OPTIONS browser CORS",
+        "/api/ingredients",
+        {
+            method: "OPTIONS",
+            headers: {
+                "Access-Control-Request-Method": "GET",
+                "Access-Control-Request-Headers":
+                    "Content-Type, X-NAU-Backend-Diagnostic"
+            }
+        },
+        [200, 204]
+    );
+
+    await check(
+        "GET unknown API / JSON 404",
+        "/api/__nau_api_test_missing_route__",
+        {},
+        [404]
+    );
+
+    const failed = checks.filter(item => !item.ok);
+
+    if (card) {
+        const badge = card.querySelector(".statusBadge");
+
+        if (failed.length) {
+            card.classList.add("failed");
+            if (badge) badge.textContent = "FAILED";
+        } else {
+            card.classList.add("passed");
+            if (badge) badge.textContent = "PASSED";
+        }
+    }
+
+    const detail = document.getElementById("fullCoverageDetail");
+    if (detail) {
+        detail.textContent =
+            (checks.length - failed.length) + "/" + checks.length +
+            " API checks passed. No temporary database records were created.";
+    }
+
+    if (failed.length) {
+        throw new Error(
+            failed.length + " of " + checks.length + " API checks failed."
+        );
+    }
+
+    return checks;
+}
+
+
+async function runAllTests() {
+    if (testRunning || suiteRunning) return;
+
+    testRunning = true;
+    suiteRunning = true;
+
+    const button = document.getElementById("testAllButton");
+    if (button) {
+        button.disabled = true;
+        button.textContent = "TESTING FULL SUITE...";
+    }
+
+    resetCards();
+    logMessage("===== NEW FULL API SUITE TEST =====", "info");
+    logMessage(
+        "Running every existing Backend API suite, followed by complete API coverage.",
+        "info"
+    );
+
+    const ids = createTestIds();
+    const state = {
+        ingredientCreated: false,
+        recipeCreated: false,
+        promoCreated: false
+    };
+
+    let failures = 0;
+
+    const runStep = async (name, fn) => {
+        try {
+            await fn();
+            logMessage("SUITE PASS | " + name, "success");
+        } catch (error) {
+            failures++;
+            logMessage(
+                "SUITE FAIL | " + name + " | " + error.message,
+                "error"
+            );
+        }
+    };
+
+    try {
+        await runStep("Server health", async () => {
+            const online = await checkServer();
+            requireCondition(online === true, "Server health check failed.");
+        });
+
+        await runStep("Ingredients CRUD API", async () => {
+            await createAndTestIngredient(ids, state);
+        });
+
+        await runStep("Recipes CRUD API", async () => {
+            await createAndTestRecipe(ids, state);
+        });
+
+        await runStep("Promo CRUD API", async () => {
+            await createAndTestPromo(ids, state);
+        });
+
+        await runStep("SHOT special recipe API", async () => {
+            await testShotSpecial();
+        });
+
+        await runStep("Sales History API", async () => {
+            await testSalesHistory();
+        });
+
+        await runStep("Google Finance API", async () => {
+            await testGoogleApi(true);
+        });
+
+        await runStep("Payment validation API", async () => {
+            await testPaymentApi(ids, state);
+        });
+
+        await runStep("Refund API", async () => {
+            await testRefundApi(ids);
+        });
+
+        await runStep("Void API", async () => {
+            await testVoidApi(ids);
+        });
+
+        // This is the original broad client/server contract suite.
+        await runStep("Complete Client ↔ Server Coverage", async () => {
+            await testCompleteClientServerCoverage();
+        });
+
+        // This is the newer route-by-route API-only coverage suite.
+        await runStep("Complete API Coverage", async () => {
+            await testApiOnlyCoverage();
+        });
+
+    } finally {
+        // Always clean temporary CRUD fixtures, even if an earlier suite fails.
+        try {
+            await cleanupFixtures(ids, state);
+            logMessage("SUITE PASS | Temporary fixture cleanup", "success");
+        } catch (error) {
+            failures++;
+            logMessage(
+                "SUITE FAIL | Temporary fixture cleanup | " + error.message,
+                "error"
+            );
+        }
+
+        finalizeCrudCardStates(state);
+
+        suiteRunning = false;
+        testRunning = false;
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "TEST ALL API";
+        }
+
+        if (failures === 0) {
+            logMessage("All tests and APIs passed", "success");
+        } else {
+            logMessage(
+                "FULL API SUITE finished with " + failures + " failure(s).",
+                "error"
+            );
+        }
+    }
+}
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+async function startBackendConsole() {
+
+    logMessage(
+        "NAU Backend Console ready.",
+        "info"
+    );
+
+
+    const online =
+        await checkServer();
+
+
+    if (
+        online
+    ) {
+
+        await syncServerLog(
+            true
+        );
+
+    }
+
+
+    window.setInterval(
+        function () {
+
+            if (
+                !suiteRunning
+            ) {
+
+                checkServer();
+
+            }
+
+        },
+        5000
+    );
+
+
+    window.setInterval(
+        function () {
+
+            syncServerLog(
+                false
+            );
+
+        },
+        1000
+    );
+
+}
+
+
+startBackendConsole();
+
+</script>
+
+
+<script id="nau-storage-notice-script">
+(() => {
+    'use strict';
+
+    const STORAGE_API = 'http://127.0.0.1:8000';
+    let lastNoticeId = null;
+    let noticeInitialized = false;
+    let polling = false;
+
+    function ensureStorageDialog() {
+        let overlay = document.getElementById('nau-storage-notice-overlay');
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.id = 'nau-storage-notice-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'nau-storage-notice-title');
+        overlay.innerHTML = `
+            <div id="nau-storage-notice-card">
+                <div id="nau-storage-notice-heading">
+                    <span id="nau-storage-notice-dot" aria-hidden="true"></span>
+                    <h2 id="nau-storage-notice-title">STORAGE WARNING</h2>
+                </div>
+                <p id="nau-storage-notice-message"></p>
+                <button id="nau-storage-notice-ok" type="button">OK</button>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        document.getElementById('nau-storage-notice-ok')
+            .addEventListener('click', () => overlay.classList.remove('open'));
+
+        return overlay;
+    }
+
+    function updateServerStatus(storage) {
+        const element =
+            document.getElementById('serverStatus')
+            || document.getElementById('serverStatusText');
+
+        if (!element || !storage) return;
+
+        if (String(storage.mode || '').toUpperCase() === 'BACKUP') {
+            element.textContent = 'Server online • BACKUP';
+        }
+    }
+
+    function showStorageNotice(storage) {
+        if (!storage || typeof storage !== 'object') return;
+
+        const notice = storage.notice;
+        if (!notice || notice.id === undefined || notice.id === null) return;
+
+        const noticeId = String(notice.id);
+
+        // /notifications/pending only returns an undisplayed event.
+        // Never suppress the first pending notification on page load.
+        noticeInitialized = true;
+
+        if (noticeId === lastNoticeId) return;
+        lastNoticeId = noticeId;
+
+        const backupActive =
+            String(notice.type || '').toLowerCase() === 'database_failover';
+
+        const mainRestored =
+            String(notice.type || '').toLowerCase() === 'main_restored' ||
+            String(notice.message || '').startsWith('MAIN DATABASE RESTORED');
+
+        const overlay = ensureStorageDialog();
+        document.getElementById('nau-storage-notice-title').textContent =
+            mainRestored
+                ? 'MAIN DATABASE RESTORED'
+                : (
+                    backupActive
+                        ? 'DATABASE BACKUP ACTIVE'
+                        : 'STORAGE WARNING'
+                );
+
+        const dot =
+            document.getElementById('nau-storage-notice-dot');
+
+        dot.classList.toggle(
+            'restored',
+            mainRestored
+        );
+
+        let message;
+
+        if (mainRestored) {
+            message =
+                'The main database is available again.\n\n' +
+                'Backup data has been synchronized and verified. ' +
+                'The POS is now using the main database again.';
+        } else if (backupActive) {
+            message =
+                'The main database is currently unavailable.\n\n' +
+                'The POS has switched to the live backup database. ' +
+                'You can continue working normally while the server waits for Main to return.';
+        } else {
+            message =
+                String(
+                    notice.message ||
+                    'The server reported a storage warning.'
+                );
+        }
+
+        document.getElementById('nau-storage-notice-message').textContent =
+            message;
+
+        overlay.classList.add('open');
+    }
+
+    async function pollStorageStatus() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const response = await window.fetch(
+                STORAGE_API + '/api/server/notifications/pending',
+                {
+                    headers: {
+                        'X-NAU-Backend-Diagnostic': '1'
+                    }
+                }
+            );
+
+            if (!response.ok) return;
+
+            const payload = await response.json();
+            const notice =
+            payload &&
+            payload.notification;
+
+            if (!notice) return;
+
+            // Show it first, THEN tell the server it was displayed.
+            showStorageNotice({
+                notice: notice
+            });
+
+            await window.fetch(
+                STORAGE_API + '/api/server/notifications/ack',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-NAU-Backend-Diagnostic': '1'
+                    },
+                    body: JSON.stringify({
+                        id: notice.id,
+                        client: 'backend.html'
+                    })
+                }
+            );
+        } catch (_) {
+            // No ACK on failure; pending notification remains available.
+        } finally {
+            polling = false;
+        }
+    }
+
+    function startStorageWatcher() {
+        ensureStorageDialog();
+        /* Database storage notifications disabled. */
+        window.setInterval(pollStorageStatus, 3000);
+    }
+
+    // Database storage notifications were retired in V15.
+    // Do not start the legacy notification watcher.
+})();
+</script>
+
+</body>
+</html>
