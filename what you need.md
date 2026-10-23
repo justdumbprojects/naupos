@@ -41,8 +41,6 @@ You will also need a Google Cloud project, enabled **Google Drive API** and **Go
 
 ```powershell
 py -0p
-ffmpeg -version
-cloudflared --version
 ```
 
 Not all integrations are necessary for basic local POS usage. The source currently lacks a fully verified end-to-end fresh-install dependency manifest, so additional environment-specific setup may be needed.
