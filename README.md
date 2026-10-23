@@ -15,10 +15,10 @@ Náu POS uses a Python backend and an HTML/CSS/JavaScript frontend. The project 
 
 ## Getting started
 
-- [What you need](what%20you%20need.md) — Python, Google libraries, FFmpeg, cloudflared and other dependencies.
-- [How to set up](how%20to%20setup.md) — Google Drive/Sheets OAuth, backups, POS logos, camera and tunnel configuration.
+- [What you need](what%20you%20need.md) — Python and optional Google libraries.
+- [How to set up](how%20to%20setup.md) — Google Drive/Sheets OAuth, backups, POS logos, POS configuration.
 
-**Note:** The full sanitized backend/frontend source is being prepared for publication; the repository is not yet a complete runnable distribution.
+**Note:** The full sanitized backend/frontend source is being prepared for publication; the repository is not yet a complete runnable distribution. The public edition excludes the Founder remote API, Cloudflare Tunnel manager, and camera streaming; FFmpeg and cloudflared are not required.
 
 ## Contributing
 
