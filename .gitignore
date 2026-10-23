@@ -37,3 +37,18 @@ google_finance_token.json
 .idea/
 .DS_Store
 Thumbs.db
+
+# Náu local settings may contain DPAPI-encrypted Cloudflare tunnel token
+POSsettings.json
+**/POSsettings.json
+founder_tunnel_token.dpapi
+**/founder_tunnel_token.dpapi
+**/founder_tunnel_cloudflared.log
+# Cloudflare credential and tunnel config files
+cert.pem
+**/cert.pem
+*.cfargotunnel.com.json
+**/.cloudflared/
+# Backups and exports
+*.backup
+*.zip
