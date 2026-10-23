@@ -13,6 +13,13 @@ Náu POS uses a Python backend and an HTML/CSS/JavaScript frontend. The project 
 - `docs/` — contributor, security, and development notes
 - `.github/workflows/` — automated checks
 
+## Getting started
+
+- [What you need](what%20you%20need.md) — Python, Google libraries, FFmpeg, cloudflared and other dependencies.
+- [How to set up](how%20to%20setup.md) — Google Drive/Sheets OAuth, backups, POS logos, camera and tunnel configuration.
+
+**Note:** The full sanitized backend/frontend source is being prepared for publication; the repository is not yet a complete runnable distribution.
+
 ## Contributing
 
 Please open an Issue before substantial changes. Submit bug fixes and features on separate branches using pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md).
