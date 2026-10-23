@@ -1,21 +1,14 @@
-# Security Policy
+# Credential and data handling
 
-Náu POS is under active development. It has not undergone a complete independent penetration test.
+## Confirmed in supplied source archive
+The source archive contained `google_finance_client.json` with a populated OAuth desktop client ID and client secret. It was excluded from the prepared GitHub package. The application loads this credential from a local file; do not remove that file from the deployed bar machine without arranging a replacement.
 
-## Reporting vulnerabilities
+## Required follow-up
+- If that credential was already pushed to the **public** repository, treat it as exposed. Rotate/recreate the Google OAuth client credential as appropriate in Google Cloud Console, update the local runtime configuration, and remove the old secret from Git history. Merely deleting the file in a new commit does not remove it from earlier commits.
+- Review the repository's existing commits for previously exposed credentials; this package cannot sanitize existing Git history.
+- Keep OAuth tokens, Cloudflare tunnel credentials, private keys, customer records and sales data out of Git.
+- Enable GitHub secret scanning/push protection if available for the repository.
+- Do not paste credential values into Issues, PRs, logs or chat.
 
-Please do **not** publish exploitable vulnerabilities, secrets, or private data in a public GitHub Issue. Contact the repository maintainer privately through their GitHub profile, or use GitHub's private vulnerability reporting feature if enabled.
-
-## Secret handling
-
-Never commit:
-- Google OAuth client credentials or access/refresh tokens
-- API keys, Cloudflare tunnel credentials, private keys
-- Live customer, reservation, inventory, or sales databases
-- Database backups, session material, or logs containing sensitive data
-
-Use local configuration files excluded by `.gitignore`. If a credential was previously committed, **rotate/revoke it** and remove it from Git history; a later deletion commit does not erase the earlier copy.
-
-## Security expectations
-
-The backend must independently validate permissions, input, and one-time action tokens. Frontend hiding of UI elements is not an authorization boundary.
+## Scope
+A static pattern-based scan found no obvious literal GitHub token, Google API key, or PEM private key in the first-party source files. This is not a proof that all secrets are absent. Dynamic values, obfuscation, and historical commits require separate review.

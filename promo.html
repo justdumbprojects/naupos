@@ -1,0 +1,5915 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<style>
+
+/* ====================================================
+   NÁU DARK SCROLLBARS
+   ==================================================== */
+
+/*
+  WebView2/Chromium otherwise uses the bright Windows scrollbar, which looks
+  completely out of place against NÁU's dark panels.
+*/
+html {
+    scrollbar-color: #4b4b4b #181818;
+    scrollbar-width: thin;
+}
+
+* {
+    scrollbar-color: #4b4b4b transparent;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    min-height: 34px;
+    background: #4b4b4b;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #666;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background: #777;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+
+
+</style>
+
+<style>html { background: #111; }</style>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NAU POS - Promo</title>
+
+    <link rel="icon" type="image/png" href="http://127.0.0.1:8000/api/assets/nau-logo-receipt.png">
+    <link rel="shortcut icon" type="image/png" href="http://127.0.0.1:8000/api/assets/nau-logo-receipt.png">
+    <link rel="apple-touch-icon" href="http://127.0.0.1:8000/api/assets/nau-logo-receipt.png">
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #111;
+            color: white;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        header {
+            height: 80px;
+            padding: 15px 20px;
+            background: #1b1b1b;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .headerLeft {
+
+            min-width: 250px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+        }
+
+
+        .brandLogoLink {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            text-decoration: none;
+
+            line-height: 0;
+
+        }
+
+
+        .brandLogo {
+
+            display: block;
+
+            height: 44px;
+
+            width: auto;
+
+            max-width: 240px;
+
+            object-fit: contain;
+
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 31px;
+        }
+
+        #serverStatus {
+            margin-top: 6px;
+            color: #aaa;
+            font-size: 14.5px;
+        }
+
+        #mainNavigation {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        
+            overflow-x: auto;
+            min-width: 0;
+            scrollbar-width: thin;
+        }
+
+        .navButton {
+            padding: 10px 16px;
+            background: #292929;
+            color: #aaa;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15.5px;
+            white-space: nowrap;
+        }
+
+        .navButton:hover {
+            background: #363636;
+            color: white;
+        }
+
+        .navButton.active {
+            background: #555;
+            color: white;
+        }
+
+        main {
+            height: calc(100vh - 80px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .pageHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pageHeaderLeft h2 {
+            margin: 0;
+            font-size: 26.5px;
+        }
+
+        .pageHeaderLeft p {
+            margin: 6px 0 0 0;
+            color: #888;
+            font-size: 15.5px;
+        }
+
+        .addButton {
+            padding: 11px 18px;
+            background: #0d6b2b;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15.5px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .addButton:hover {
+            background: #128b39;
+        }
+
+        .addButton:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .summaryGrid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .summaryCard {
+            padding: 15px 16px;
+            background: #181818;
+            border: 1px solid #303030;
+            border-radius: 8px;
+        }
+
+        .summaryLabel {
+            color: #777;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .summaryValue {
+            margin-top: 6px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .summaryValue.activeValue {
+            color: #7cff7c;
+        }
+
+        .summaryValue.inactiveValue {
+            color: #d1a95e;
+        }
+
+        .controlBar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 420px;
+            padding: 12px 14px;
+            background: #222;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 7px;
+            outline: none;
+            font-size: 15.5px;
+        }
+
+        #searchInput:focus {
+            border-color: #555;
+        }
+
+        #searchInput::placeholder {
+            color: #777;
+        }
+
+        #statusFilter {
+            min-width: 150px;
+            padding: 12px 14px;
+            background: #222;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 7px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #statusFilter:focus {
+            border-color: #555;
+        }
+
+        .clearButton {
+            padding: 12px 14px;
+            background: #292929;
+            color: #ddd;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14.5px;
+        }
+
+        .clearButton:hover {
+            background: #3a3a3a;
+            color: white;
+        }
+
+        .tableContainer {
+            width: 100%;
+            overflow-x: auto;
+            background: #181818;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+
+        #promoTable {
+            width: 100%;
+            min-width: 880px;
+            border-collapse: collapse;
+        }
+
+        #promoTable th {
+            padding: 14px 12px;
+            background: #222;
+            color: #aaa;
+            border-bottom: 1px solid #333;
+            text-align: left;
+            font-size: 14.5px;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        #promoTable td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #292929;
+            font-size: 15.5px;
+            vertical-align: middle;
+        }
+
+        #promoTable tbody tr:hover {
+            background: #202020;
+        }
+
+        #promoTable tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .promoId {
+            font-family: Consolas, monospace;
+            font-size: 14.5px;
+            font-weight: bold;
+            color: #d9d9d9;
+        }
+
+        .promoName {
+            font-weight: bold;
+        }
+
+        .promoTypeBadge {
+            display: inline-block;
+            padding: 5px 8px;
+            background: #292929;
+            border: 1px solid #3c3c3c;
+            border-radius: 999px;
+            color: #bbb;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.4px;
+        }
+
+        .promoValue {
+            font-family: Consolas, monospace;
+            font-weight: bold;
+        }
+
+        .statusBadge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .statusBadge::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .statusBadge.active {
+            background: #1d2a21;
+            color: #86d698;
+            border: 1px solid #285b35;
+        }
+
+        .statusBadge.active::before {
+            background: #55d977;
+        }
+
+        .statusBadge.inactive {
+            background: #2a2419;
+            color: #d9b56e;
+            border: 1px solid #604d29;
+        }
+
+        .statusBadge.inactive::before {
+            background: #e3b64d;
+        }
+
+        .actionButtons {
+            display: flex;
+            gap: 7px;
+        }
+
+        .actionButton {
+            padding: 7px 11px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .editButton {
+            background: #292929;
+            color: white;
+        }
+
+        .editButton:hover {
+            background: #3a3a3a;
+        }
+
+        .deleteButton {
+            background: #4a2020;
+            color: #ffb3b3;
+        }
+
+        .deleteButton:hover {
+            background: #642828;
+        }
+
+        .emptyState,
+        .errorState {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .emptyState {
+            color: #777;
+        }
+
+        .errorState {
+            color: #ff6666;
+        }
+
+        #promoOverlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 1200;
+        }
+
+        #promoOverlay.active {
+            display: flex;
+        }
+
+        #promoModal {
+            width: 560px;
+            max-width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 25px;
+            background: #1b1b1b;
+            border: 1px solid #3a3a3a;
+            border-radius: 11px;
+            box-shadow: 0 22px 70px rgba(0, 0, 0, 0.6);
+        }
+
+        #promoModal h2 {
+            margin: 0 0 20px 0;
+            font-size: 24px;
+        }
+
+        .formGroup {
+            margin-bottom: 16px;
+        }
+
+        .formGroup label {
+            display: block;
+            margin-bottom: 7px;
+            color: #aaa;
+            font-size: 14.5px;
+        }
+
+        .formGroup input {
+            width: 100%;
+            padding: 11px 12px;
+            background: #222;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 6px;
+            outline: none;
+            font-size: 15.5px;
+        }
+
+        .formGroup input:focus {
+            border-color: #555;
+        }
+
+        #promoIdInput {
+            text-transform: uppercase;
+            font-family: Consolas, monospace;
+        }
+
+        .fieldHint {
+            margin-top: 6px;
+            color: #707070;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .typePicker {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .typeOption {
+            position: relative;
+        }
+
+        .typeOption input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .typeOptionLabel {
+            display: block;
+            min-height: 88px;
+            padding: 13px;
+            background: #202020;
+            border: 1px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition:
+                background 0.12s ease,
+                border-color 0.12s ease;
+        }
+
+        .typeOptionLabel:hover {
+            background: #252525;
+        }
+
+        .typeOption input:checked + .typeOptionLabel {
+            background: #1d2a21;
+            border-color: #347445;
+        }
+
+        .typeOptionTitle {
+            font-size: 15.5px;
+            font-weight: bold;
+        }
+
+        .typeOptionDescription {
+            margin-top: 6px;
+            color: #777;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .typeOption input:checked
+        + .typeOptionLabel
+        .typeOptionDescription {
+            color: #89a58f;
+        }
+
+        .activeControl {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 13px 14px;
+            background: #202020;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+
+        .activeControlText strong {
+            display: block;
+            font-size: 14.5px;
+        }
+
+        .activeControlText span {
+            display: block;
+            margin-top: 4px;
+            color: #777;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .toggleSwitch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            min-width: 48px;
+        }
+
+        .toggleSwitch input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .toggleSlider {
+            position: absolute;
+            inset: 0;
+            background: #444;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+
+        .toggleSlider::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 3px;
+            left: 3px;
+            background: #ccc;
+            border-radius: 50%;
+            transition: 0.15s ease;
+        }
+
+        .toggleSwitch input:checked
+        + .toggleSlider {
+            background: #0d6b2b;
+        }
+
+        .toggleSwitch input:checked
+        + .toggleSlider::after {
+            transform: translateX(22px);
+            background: white;
+        }
+
+        .modalButtons {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .modalButtons button {
+            flex: 1;
+            min-height: 47px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15.5px;
+            font-weight: bold;
+        }
+
+        #cancelPromoButton {
+            background: #4a2020;
+            color: #ffb3b3;
+        }
+
+        #cancelPromoButton:hover {
+            background: #642828;
+        }
+
+        #savePromoButton {
+            background: #0d6b2b;
+            color: white;
+        }
+
+        #savePromoButton:hover:not(:disabled) {
+            background: #128b39;
+        }
+
+        #savePromoButton:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #appDialogOverlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 2000;
+        }
+
+        #appDialogOverlay.active {
+            display: flex;
+        }
+
+        #appDialogModal {
+            width: 470px;
+            max-width: 100%;
+            padding: 24px;
+            background: #181818;
+            border: 1px solid #444;
+            border-radius: 12px;
+            box-shadow:
+                0 22px 70px
+                rgba(0, 0, 0, 0.65);
+        }
+
+        #appDialogModal.info {
+            border-color: #4a4a4a;
+        }
+
+        #appDialogModal.success {
+            border-color: #286e3d;
+        }
+
+        #appDialogModal.warning {
+            border-color: #765d24;
+        }
+
+        #appDialogModal.error {
+            border-color: #743535;
+        }
+
+        .appDialogHeader {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #333;
+        }
+
+        #appDialogIndicator {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+            border-radius: 50%;
+            background: #888;
+        }
+
+        #appDialogModal.info
+        #appDialogIndicator {
+            background: #7b9cff;
+        }
+
+        #appDialogModal.success
+        #appDialogIndicator {
+            background: #55d977;
+        }
+
+        #appDialogModal.warning
+        #appDialogIndicator {
+            background: #e3b64d;
+        }
+
+        #appDialogModal.error
+        #appDialogIndicator {
+            background: #ff6666;
+        }
+
+        #appDialogTitle {
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        #appDialogMessage {
+            padding: 18px 0 4px 0;
+            color: #bbb;
+            font-size: 15.5px;
+            line-height: 1.6;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        .appDialogButtons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .appDialogButton {
+            flex: 1;
+            min-height: 48px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15.5px;
+            font-weight: bold;
+        }
+
+        #appDialogCancelButton {
+            background: #4a2020;
+            color: #ffb3b3;
+        }
+
+        #appDialogCancelButton:hover {
+            background: #642828;
+        }
+
+        #appDialogConfirmButton {
+            background: #0d6b2b;
+            color: white;
+        }
+
+        #appDialogConfirmButton:hover {
+            background: #128b39;
+        }
+
+        @media (max-width: 1000px) {
+
+            header {
+                height: auto;
+                min-height: 80px;
+                flex-wrap: wrap;
+            }
+
+            #mainNavigation {
+                overflow-x: auto;
+                padding-bottom: 3px;
+            }
+
+            main {
+                height: calc(100vh - 100px);
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .pageHeader {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .addButton {
+                width: 100%;
+            }
+
+            .summaryGrid {
+                grid-template-columns: 1fr;
+            }
+
+            #searchInput,
+            #statusFilter,
+            .clearButton {
+                width: 100%;
+                max-width: none;
+            }
+
+            .typePicker {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+<!-- NAU profile sign-in -->
+<style>html.nau-locked, html.nau-locked body { background: #111 !important; color-scheme: dark; }
+#nau-auth-overlay[hidden] { display: none !important; }
+html.nau-locked body > :not(#nau-auth-overlay):not(script):not(style) { display: none !important; }
+#nau-auth-overlay { position: fixed; inset: 0; z-index: 2147483647; overflow: auto; background: #111111; color: #eeeeee; padding: 28px 16px; display: grid; align-items: center; justify-items: center; font: 17.5px/1.5 Arial, sans-serif; box-sizing: border-box; }
+#nau-auth-overlay * { box-sizing: border-box; }
+#nau-auth-overlay .nau-auth-card { width: min(100%, 440px); padding: 32px; background: #1b1b1b; border: 1px solid #3a3a3a; border-radius: 18px; box-shadow: 0 16px 60px #00000055; }
+#nau-auth-overlay .nau-auth-brand { color: #f0a35e; letter-spacing: .18em; font-weight: 700; }
+#nau-auth-overlay h1 { margin: 16px 0 6px; font: bold 31px/1.2 Arial, sans-serif; }
+#nau-auth-overlay p { margin: 8px 0 18px; }
+#nau-auth-overlay nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; }
+#nau-auth-overlay button { cursor: pointer; font: inherit; border-radius: 8px; border: 1px solid #3a3a3a; background: #252525; padding: 9px 12px; color: #eeeeee; }
+#nau-auth-overlay button[aria-pressed=true] { border-color: #df914d; color: #f0b47c; background: #382a20; }
+#nau-auth-overlay button:disabled { opacity: .6; cursor: wait; }
+#nau-auth-overlay label { display: block; margin-bottom: 16px; text-align: left; font-weight: 600; }
+#nau-auth-overlay label[hidden] { display: none; }
+#nau-auth-overlay input { display: block; width: 100%; height: 46px; padding: 10px 12px; margin-top: 6px; border: 1px solid #444444; border-radius: 8px; font: 17.5px Arial, sans-serif; color: #eeeeee; background: #1b1b1b; }
+#nau-auth-overlay input:focus { outline: 2px solid #f46524; outline-offset: 2px; }
+#nau-auth-overlay #nau-auth-submit { width: 100%; background: #a94d20; color: white; border: 0; padding: 12px; }
+#nau-auth-message { min-height: 24px; font-size: 15.5px; color: #ffc28f; }
+#nau-auth-overlay [hidden] { display: none !important; }
+#nau-auth-overlay #nau-change-pin { display: none !important; margin: 16px auto 0; border: 0; background: transparent; color: #f0b47c; font-size: 14.5px; text-decoration: underline; }
+#nau-pin-message { min-height: 24px; color: #ffc28f; font-size: 15.5px; }
+#nau-auth-overlay #nau-forgot-password { display: block; font-size: 13px; padding: 0; margin: -8px 0 18px; border: 0; border-radius: 0; background: transparent; color: #f0b47c; text-decoration: underline; }
+#nau-auth-overlay #nau-forgot-password[hidden] { display: none; }
+#nau-profile-logout { position: fixed; right: 16px; bottom: 16px; z-index: 10000; border: 1px solid #444444; border-radius: 9px; padding: 10px 14px; background: #252525; color: #eeeeee; cursor: pointer; font: 15.5px Arial,sans-serif; box-shadow: 0 2px 12px #0002; }
+
+#nau-auth-overlay #nau-delete-user, #nau-auth-overlay #nau-edit-role-user { display:block; margin:8px auto 0; border:0; background:transparent; color:#f0b47c; font-size:14.5px; text-decoration:underline; }
+#nau-auth-overlay select { display:block; width:100%; min-height:46px; margin-top:6px; padding:10px; color:#eeeeee; background:#1b1b1b; border:1px solid #444444; border-radius:8px; font:17.5px Arial,sans-serif; }
+#nau-auth-overlay #nau-delete-submit { background:#8b2525; color:white; }
+#nau-delete-message, #nau-role-message { color:#ffc28f; font-size:15.5px; }
+html.nau-role-staff .nau-manager-only { display:none !important; }
+
+#nau-auth-overlay #nau-reload-profiles { border:0; background:transparent; color:#f0b47c; font-size:13px; padding:0; margin:-8px 0 14px; text-decoration:underline; }
+</style>
+<script>(() => {
+    'use strict';
+    const API = 'http://127.0.0.1:8000';
+    const KEY = 'nau_profile_session_v1';
+    const nativeFetch = window.fetch.bind(window);
+    document.documentElement.classList.add('nau-locked');
+    let token = '', expiryTimer, logoutDeadline = 0, currentUsername = '', currentRole = '';
+    let transferring = false, leavingForPOS = false;
+    const navigationKind = performance.getEntriesByType('navigation')[0]?.type;
+    const marker = new URLSearchParams(location.hash.slice(1)).get('nau-login');
+    const incomingTicket = navigationKind === 'reload' || navigationKind === 'back_forward' ? null : marker;
+    // Consume the navigation marker before any asynchronous work. A reload
+    // cannot reuse it, and the session itself is never placed in the URL.
+    if (marker) history.replaceState(null, '', location.href.split('#')[0]);
+    let finishLogin;
+    const ready = new Promise(resolve => { finishLogin = resolve; });
+    // The bearer token lives ONLY in this page's memory. SERVER persists only
+    // its SHA-256 hash, so restarting SERVER does not invalidate an already-open
+    // POS page. Reloading/reopening the frontend still requires login.
+    try {
+        const previous = localStorage.getItem(KEY);
+        localStorage.removeItem(KEY);
+        if (previous) nativeFetch(API + '/api/auth/logout', {
+            method: 'POST', headers: {'Authorization': 'Bearer ' + previous}
+        }).catch(() => {});
+    } catch (_) {}
+    function relock() {
+        const previous = token;
+        token = '';
+        document.documentElement.classList.add('nau-locked');
+        if (previous) nativeFetch(API + '/api/auth/logout', {
+            method: 'POST', headers: {'Authorization': 'Bearer ' + previous}, keepalive: true
+        }).catch(() => {});
+        location.reload();
+    }
+    let nauActionCounter = 0;
+    let nauActionBusyCount = 0;
+    let nauActionSpinnerTimer = null;
+    const NAU_ACTION_ACK_TIMEOUT_MS = 1800;
+    const NAU_ACTION_POLL_INTERVAL_MS = 100;
+    const NAU_ACTION_MAX_WAIT_MS = 15000;
+    const NAU_ACTION_RECEIPT_WAIT_MS = 2200;
+
+    function nauActionDelay(ms) {
+        return new Promise(resolve => window.setTimeout(resolve, ms));
+    }
+
+    function nauActionControlled(url, method, headers) {
+        if (url.origin !== API) return false;
+        if (!url.pathname.startsWith('/api/')) return false;
+        if (url.pathname.startsWith('/api/auth/')) return false;
+        if (url.pathname.startsWith('/api/actions/')) return false;
+        if (url.pathname.startsWith('/api/assets/')) return false;
+        if (headers.get('X-NAU-Backend-Diagnostic') === '1') return false;
+        return ['GET', 'POST', 'PUT', 'DELETE'].includes(method);
+    }
+
+    function nauActionInteractive(url, method, headers) {
+        if (!['POST', 'PUT', 'DELETE'].includes(method)) return false;
+        if (headers.get('X-NAU-Backend-Diagnostic') === '1') return false;
+
+        // Automatic table recovery/sync remains silent. It still goes through
+        // the exact same admission + one-time-token protocol in the background.
+        if (url.pathname === '/api/order-data') return false;
+        if (url.pathname.startsWith('/api/server/notifications/')) return false;
+        return true;
+    }
+
+    function ensureNauActionSpinner() {
+        let overlay = document.getElementById('nau-action-wait-overlay');
+        if (overlay) return overlay;
+
+        const style = document.createElement('style');
+        style.id = 'nau-action-wait-style';
+        style.textContent = `
+            #nau-action-wait-overlay {
+                position: fixed;
+                inset: 0;
+                z-index: 2147483000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.38);
+                backdrop-filter: blur(2px);
+            }
+            #nau-action-wait-overlay.open { display: flex; }
+            #nau-action-wait-card {
+                min-width: 150px;
+                padding: 22px 26px;
+                border: 1px solid #3a3a3a;
+                border-radius: 14px;
+                background: #151515;
+                color: #f3f3f3;
+                box-shadow: 0 18px 60px rgba(0,0,0,.42);
+                text-align: center;
+                font: 600 13px Arial, Helvetica, sans-serif;
+                letter-spacing: .08em;
+            }
+            #nau-action-wait-spinner {
+                width: 28px;
+                height: 28px;
+                margin: 0 auto 13px;
+                border: 3px solid #3a3a3a;
+                border-top-color: #f0b47c;
+                border-radius: 50%;
+                animation: nau-action-spin .7s linear infinite;
+            }
+            @keyframes nau-action-spin { to { transform: rotate(360deg); } }
+        `;
+        document.head.appendChild(style);
+
+        overlay = document.createElement('div');
+        overlay.id = 'nau-action-wait-overlay';
+        overlay.setAttribute('aria-live', 'polite');
+        overlay.innerHTML = `
+            <div id="nau-action-wait-card" role="status" aria-label="Please wait">
+                <div id="nau-action-wait-spinner"></div>
+                PLEASE WAIT
+            </div>
+        `;
+        (document.body || document.documentElement).appendChild(overlay);
+        return overlay;
+    }
+
+    function beginNauActionWait(interactive) {
+        if (!interactive) return;
+        nauActionBusyCount += 1;
+        if (nauActionBusyCount !== 1) return;
+
+        nauActionSpinnerTimer = window.setTimeout(() => {
+            if (nauActionBusyCount > 0) {
+                ensureNauActionSpinner().classList.add('open');
+            }
+        }, 120);
+    }
+
+    function endNauActionWait(interactive) {
+        if (!interactive) return;
+        nauActionBusyCount = Math.max(0, nauActionBusyCount - 1);
+        if (nauActionBusyCount !== 0) return;
+
+        if (nauActionSpinnerTimer !== null) {
+            window.clearTimeout(nauActionSpinnerTimer);
+            nauActionSpinnerTimer = null;
+        }
+
+        const overlay = document.getElementById('nau-action-wait-overlay');
+        if (overlay) overlay.classList.remove('open');
+    }
+
+    async function nauActionBodyText(input, init, method) {
+        if (method === 'GET' || method === 'HEAD') return '';
+
+        if (init && init.body !== undefined && init.body !== null) {
+            if (typeof init.body === 'string') return init.body;
+            if (init.body instanceof URLSearchParams) return init.body.toString();
+            if (init.body instanceof Blob) return await init.body.text();
+            throw new Error('Unsupported request body for secure action tracking.');
+        }
+
+        if (input instanceof Request) {
+            return await input.clone().text();
+        }
+
+        return '';
+    }
+
+    async function nauNewActionId() {
+        const sentAtMs = Date.now();
+        nauActionCounter = (nauActionCounter + 1) % 1000000;
+        const nonce = new Uint32Array(4);
+        crypto.getRandomValues(nonce);
+        const material =
+            String(sentAtMs) + '|' +
+            String(nauActionCounter) + '|' +
+            Array.from(nonce).join('|');
+        return {
+            sentAtMs,
+            actionId: (await digest(material)).toUpperCase()
+        };
+    }
+
+    async function nauFetchJsonWithTimeout(url, options, timeoutMs) {
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+            const response = await nativeFetch(url, {...options, signal: controller.signal});
+            let payload = {};
+            try { payload = await response.json(); } catch (_) {}
+            return {response, payload};
+        } finally {
+            window.clearTimeout(timer);
+        }
+    }
+
+    function nauStoredResponse(state) {
+        const payload = state && state.response_body !== undefined
+            ? state.response_body
+            : {
+                success: false,
+                error: (state && state.error) || 'Action did not complete.'
+            };
+
+        return new Response(
+            JSON.stringify(payload),
+            {
+                status: Number(state && state.response_status) || 500,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'X-NAU-Action-ID': String(state && state.action_id || ''),
+                    'X-NAU-Action-Received': state && state.action_received ? '1' : '0',
+                    'X-NAU-Action-Status': String(state && state.action_status || 'FAILED')
+                }
+            }
+        );
+    }
+
+    async function nauPollAction(actionId, authHeader, maxWaitMs = NAU_ACTION_MAX_WAIT_MS, mode = 'ready-or-terminal') {
+        const deadline = performance.now() + maxWaitMs;
+        let consecutiveNetworkErrors = 0;
+
+        while (performance.now() < deadline) {
+            try {
+                const response = await nativeFetch(
+                    API + '/api/actions/' + encodeURIComponent(actionId),
+                    {headers: {'Authorization': authHeader}}
+                );
+
+                let payload = {};
+                try { payload = await response.json(); } catch (_) {}
+
+                if (!response.ok || !payload || payload.action_id !== actionId) {
+                    throw new Error(payload.error || 'Server lost the action status.');
+                }
+
+                consecutiveNetworkErrors = 0;
+                const status = String(payload.action_status || '').toUpperCase();
+                const terminal = ['DONE', 'FAILED', 'REJECTED'].includes(status);
+
+                if (mode === 'terminal') {
+                    if (terminal) return payload;
+                }
+                else if (mode === 'received-or-terminal') {
+                    if (terminal || payload.action_received === true || status === 'RECEIVED' || status === 'PROCESSING') {
+                        return payload;
+                    }
+                }
+                else if (terminal || status === 'READY') {
+                    return payload;
+                }
+            } catch (error) {
+                consecutiveNetworkErrors += 1;
+                if (consecutiveNetworkErrors >= 4) throw error;
+            }
+
+            await nauActionDelay(NAU_ACTION_POLL_INTERVAL_MS);
+        }
+
+        if (mode === 'received-or-terminal') {
+            throw new Error('Server did not acknowledge receiving this action. Please try again.');
+        }
+
+        throw new Error('Server is taking too long to process this action. Please try again.');
+    }
+
+    window.fetch = async (input, init = {}) => {
+        const url = new URL(
+            typeof input === 'string' || input instanceof URL ? input : input.url,
+            location.href
+        );
+
+        if (url.origin !== API) return nativeFetch(input, init);
+
+        await ready;
+
+        const headers = new Headers(
+            init.headers || (input instanceof Request ? input.headers : undefined)
+        );
+        const authHeader = 'Bearer ' + token;
+        headers.set('Authorization', authHeader);
+
+        const method = String(
+            init.method || (input instanceof Request ? input.method : 'GET') || 'GET'
+        ).toUpperCase();
+
+        if (!nauActionControlled(url, method, headers)) {
+            const result = await nativeFetch(input, {...init, headers});
+            if (result.status === 401) relock();
+            return result;
+        }
+
+        const interactive = nauActionInteractive(url, method, headers);
+        beginNauActionWait(interactive);
+
+        try {
+            const bodyText = await nauActionBodyText(input, init, method);
+            const bodyHash = await digest(bodyText);
+            const identity = await nauNewActionId();
+            const actionId = identity.actionId;
+
+            // PHASE 1: tell SERVER exactly what we intend to do. SERVER checks
+            // the signed-in session + role, binds method/path/query/body hash,
+            // and returns a one-time action token only if the request is allowed.
+            let acknowledgement;
+
+            try {
+                acknowledgement = await nauFetchJsonWithTimeout(
+                    API + '/api/actions/prepare',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': authHeader
+                        },
+                        body: JSON.stringify({
+                            action_id: actionId,
+                            sent_at_ms: identity.sentAtMs,
+                            method,
+                            path: url.pathname,
+                            query: url.search.slice(1),
+                            body_hash: bodyHash
+                        })
+                    },
+                    NAU_ACTION_ACK_TIMEOUT_MS
+                );
+            } catch (_) {
+                throw new Error('Server did not acknowledge the token request. Please try again.');
+            }
+
+            const ackResponse = acknowledgement.response;
+            const ack = acknowledgement.payload || {};
+
+            if (ackResponse.status === 401) {
+                relock();
+                throw new Error('Please log in again.');
+            }
+
+            if (!ackResponse.ok) {
+                return new Response(
+                    JSON.stringify(ack),
+                    {
+                        status: ackResponse.status,
+                        headers: {'Content-Type': 'application/json; charset=utf-8'}
+                    }
+                );
+            }
+
+            if (
+                ack.action_id !== actionId
+                || ack.acknowledged !== true
+                || ack.token_request_received !== true
+            ) {
+                throw new Error('Server did not acknowledge the token request. Please try again.');
+            }
+
+            let state = ack;
+            let actionStatus = String(state.action_status || '').toUpperCase();
+
+            if (actionStatus === 'QUEUED') {
+                state = await nauPollAction(actionId, authHeader);
+                actionStatus = String(state.action_status || '').toUpperCase();
+            }
+            else if (actionStatus === 'DUPLICATE') {
+                // A duplicate never receives a token and never executes. Follow
+                // the original action ID until SERVER reports its final result.
+                const originalActionId = String(state.duplicate_of || '');
+                if (!originalActionId) {
+                    throw new Error('Server could not identify the original action. Please try again.');
+                }
+                state = await nauPollAction(
+                    originalActionId,
+                    authHeader,
+                    NAU_ACTION_MAX_WAIT_MS,
+                    'terminal'
+                );
+                actionStatus = String(state.action_status || '').toUpperCase();
+            }
+
+            if (['DONE', 'FAILED', 'REJECTED'].includes(actionStatus)) {
+                return nauStoredResponse(state);
+            }
+
+            if (actionStatus !== 'READY') {
+                throw new Error('Server did not approve this action. Please try again.');
+            }
+
+            const actionToken = String(state.action_token || '');
+            if (!actionToken) {
+                throw new Error('Server approved the action but did not issue its one-time token. Please try again.');
+            }
+
+            // PHASE 2: perform the exact request that was approved. The token is
+            // valid once, for this signed-in session and this exact fingerprint.
+            headers.set('X-NAU-Action-ID', actionId);
+            headers.set('X-NAU-Action-Token', actionToken);
+
+            const requestPromise = nativeFetch(input, {...init, headers});
+
+            // In parallel, observe SERVER's independent receipt state. This is
+            // deliberately silent UI-wise; it proves the token-bearing action
+            // reached SERVER before we accept DONE.
+            const receiptPromise = nauPollAction(
+                actionId,
+                authHeader,
+                NAU_ACTION_RECEIPT_WAIT_MS,
+                'received-or-terminal'
+            ).catch(error => error);
+
+            let result;
+            try {
+                result = await requestPromise;
+            } catch (networkError) {
+                // SERVER may have consumed the one-time token and finished even
+                // if the HTTP response was lost. Never resend the action token;
+                // recover the terminal result by Action ID instead.
+                try {
+                    const recovered = await nauPollAction(actionId, authHeader, 3000, 'terminal');
+                    const recoveredStatus = String(recovered.action_status || '').toUpperCase();
+                    if (['DONE', 'FAILED', 'REJECTED'].includes(recoveredStatus)) {
+                        return nauStoredResponse(recovered);
+                    }
+                } catch (_) {}
+
+                throw new Error('Server connection was lost before completion. Please try again.');
+            }
+
+            if (result.status === 401) {
+                relock();
+                return result;
+            }
+
+            const receiptState = await receiptPromise;
+            const returnedActionId = result.headers.get('X-NAU-Action-ID');
+            const returnedActionReceived = result.headers.get('X-NAU-Action-Received');
+            const returnedActionStatus = String(
+                result.headers.get('X-NAU-Action-Status') || ''
+            ).toUpperCase();
+
+            const receiptConfirmed = !(
+                receiptState instanceof Error
+            ) && (
+                receiptState.action_received === true
+                || ['DONE', 'FAILED'].includes(String(receiptState.action_status || '').toUpperCase())
+            );
+
+            if (
+                returnedActionId !== actionId
+                || returnedActionReceived !== '1'
+                || !['DONE', 'FAILED'].includes(returnedActionStatus)
+                || !receiptConfirmed
+            ) {
+                try {
+                    const recovered = await nauPollAction(actionId, authHeader, 3000, 'terminal');
+                    const recoveredStatus = String(recovered.action_status || '').toUpperCase();
+                    if (['DONE', 'FAILED', 'REJECTED'].includes(recoveredStatus)) {
+                        return nauStoredResponse(recovered);
+                    }
+                } catch (_) {}
+
+                throw new Error('Server did not confirm receipt and completion of this action. Please try again.');
+            }
+
+            return result;
+        } finally {
+            endNauActionWait(interactive);
+        }
+    };
+    async function digest(text) {
+        if (!window.crypto || !crypto.subtle) throw new Error('Open this page in a current browser on the POS computer.');
+        const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+        return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    }
+    async function authCall(route, body, authToken) {
+        let response;
+        try {
+            response = await nativeFetch(API + '/api/auth/' + route, {
+                method: body === undefined ? 'GET' : 'POST',
+                headers: {'Content-Type': 'application/json', ...(authToken ? {'Authorization': 'Bearer ' + authToken} : {})},
+                body: body === undefined ? undefined : JSON.stringify(body)
+            });
+        } catch (_) {
+            const error = new Error('Cannot connect to the server. Waiting for SERVER to return…');
+            error.nauNetworkError = true;
+            throw error;
+        }
+
+        let result;
+
+        try {
+            result = await response.json();
+        } catch (_) {
+            const error = new Error('SERVER is restarting. Waiting for it to return…');
+            error.nauNetworkError = true;
+            throw error;
+        }
+
+        if (!response.ok || !result.success) {
+            const error = new Error(result.error || 'Login request failed.');
+            error.nauStatus = response.status;
+            throw error;
+        }
+
+        return result;
+    }
+
+    const waitForServer = () =>
+        new Promise(resolve => setTimeout(resolve, 1000));
+
+    async function authCallThroughRestart(route, body, authToken) {
+        while (true) {
+            try {
+                return await authCall(route, body, authToken);
+            } catch (error) {
+                if (!error.nauNetworkError) throw error;
+                await waitForServer();
+            }
+        }
+    }
+    window.NAUProfile = {
+        get username() { return currentUsername; },
+        get role() { return currentRole; },
+        get isManager() { return currentRole !== 'STAFF'; },
+        navigate: async target => {
+            if (transferring || !token) return;
+            if (String(target).split(/[?#]/, 1)[0].split('/').pop() === 'settings.html' && currentRole === 'STAFF') return;
+
+            const destination = new URL(target, location.href);
+            const name = destination.pathname.split('/').pop();
+
+            /*
+              Clicking the tab for the page we are already on must be a no-op.
+
+              Previously this created a transfer ticket and then navigated only
+              to a new hash on the SAME document. Because the page did not
+              actually reload, `transferring` stayed true forever and every
+              later tab click was ignored.
+            */
+            const currentName =
+                location.pathname.split('/').pop()
+                || 'index.html';
+
+            if (name === currentName) {
+                return;
+            }
+
+            transferring = true;
+            try {
+                // If SERVER is between stop/start, keep this page unlocked and
+                // wait for it to return. No login screen is shown.
+                const transfer = await authCallThroughRestart('transfer', {
+                    target: name, username: currentUsername
+                }, token);
+                destination.hash = 'nau-login=' + encodeURIComponent(transfer.ticket);
+                leavingForPOS = true;
+                location.assign(destination.href);
+            } catch (error) {
+                leavingForPOS = false;
+                transferring = false;
+                await appAlert(
+                    error.message,
+                    {
+                        title: "Navigation Error",
+                        tone: "error"
+                    }
+                );
+            }
+        }
+    };
+    document.addEventListener('DOMContentLoaded', async () => {
+        const panel = document.createElement('section');
+        panel.id = 'nau-auth-overlay';
+        panel.hidden = Boolean(incomingTicket);
+        panel.innerHTML = `
+          <div class="nau-auth-card">
+            <div class="nau-auth-brand">NÁU POS</div>
+            <h1 id="nau-auth-title">Log in</h1>
+            <p id="nau-auth-help">Enter your profile to open the POS.</p>
+            <nav aria-label="Profile actions">
+              <button type="button" data-mode="login">Log in</button>
+              <button type="button" data-mode="register">Create profile</button>
+            </nav>
+            <form id="nau-auth-form">
+              <label id="nau-login-profile-label">User profile<select id="nau-login-profile" required><option value="">Loading profiles…</option></select></label>
+              <button id="nau-reload-profiles" type="button">Refresh profiles</button>
+              <label id="nau-auth-user-label">Username<input id="nau-auth-user" autocomplete="username" required maxlength="100"></label>
+              <label><span id="nau-password-label">Password</span><input id="nau-auth-password" type="password" autocomplete="current-password" required maxlength="512"></label>
+              <button id="nau-forgot-password" type="button" data-mode="reset">Forgot password?</button>
+              <label id="nau-confirm-label" hidden>Confirm password<input id="nau-auth-confirm" type="password" autocomplete="new-password" maxlength="512"></label>
+              <label id="nau-pin-label" hidden>6-digit master PIN<input id="nau-auth-pin" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{6}" maxlength="6"></label>
+              <label id="nau-role-label" hidden>Role<select id="nau-auth-role"><option value="STAFF">Staff</option><option value="OWNER">Owner</option></select></label>
+              <p id="nau-auth-message" role="status" aria-live="polite"></p>
+              <button id="nau-auth-submit" type="submit">Log in</button>
+            </form>
+            <button id="nau-change-pin" type="button">Change master PIN</button>
+            <button id="nau-edit-role-user" type="button">Edit user role</button>
+            <button id="nau-delete-user" type="button">Delete user profile</button>
+            <form id="nau-role-form" hidden>
+              <label>Master 6-digit PIN<input id="nau-role-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required></label>
+              <button id="nau-role-load-profiles" type="button">Load profiles</button>
+              <label>User profile<select id="nau-role-profile" required disabled><option value="">Enter master PIN and load profiles</option></select></label>
+              <label>Role<select id="nau-role-select" required><option value="STAFF">Staff</option><option value="OWNER">Owner</option></select></label>
+              <p id="nau-role-message" role="status" aria-live="polite"></p>
+              <button id="nau-role-submit" type="submit">Save role</button>
+              <button id="nau-role-back" type="button">Back to login</button>
+            </form>
+            <form id="nau-delete-form" hidden>
+              <label>Master 6-digit PIN<input id="nau-delete-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required></label>
+              <button id="nau-load-profiles" type="button">Load profiles</button>
+              <label>Employee profile<select id="nau-delete-profile" required disabled><option value="">Enter master PIN and load profiles</option></select></label>
+              
+              <p>This removes the profile and its access. Past sales and receipts are kept.</p>
+              <label><input id="nau-delete-confirm" type="checkbox" required style="display:inline;width:auto;height:auto"> I confirm I want to delete this user profile.</label>
+              <p id="nau-delete-message" role="status" aria-live="polite"></p>
+              <button id="nau-delete-submit" type="submit">Delete profile permanently</button>
+              <button id="nau-delete-back" type="button">Back to login</button>
+            </form>
+            <form id="nau-pin-form" hidden>
+              <label>Current 6-digit PIN<input id="nau-old-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required></label>
+              <label>New 6-digit PIN<input id="nau-new-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required></label>
+              <label>Confirm new PIN<input id="nau-new-pin-confirm" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" required></label>
+              <p id="nau-pin-message" role="status" aria-live="polite"></p>
+              <button id="nau-pin-save" type="submit">Save new PIN</button>
+              <button id="nau-pin-back" type="button">Back to login</button>
+            </form>
+          </div>`;
+        document.body.appendChild(panel);
+        const byId = id => document.getElementById(id);
+        let mode = 'login', busy = false;
+        let loginProfiles = [];
+        let roleProfiles = [];
+        function updateLoginField() {
+            const profile = loginProfiles.find(p => p.account_id === byId('nau-login-profile').value);
+            const needsUsername = mode !== 'login' || Boolean(profile && !profile.username);
+            byId('nau-auth-user-label').hidden = !needsUsername;
+            byId('nau-auth-user').required = needsUsername;
+        }
+        async function loadLoginProfiles() {
+            const select = byId('nau-login-profile');
+            select.disabled = true;
+            try {
+                const result = await authCall('login-profiles');
+                loginProfiles = result.profiles;
+                select.replaceChildren(new Option('Choose your profile', ''));
+                for (const profile of loginProfiles) select.add(new Option(String(profile.label || profile.username || profile.account_id || 'User').replace(/\bFOUNDER\b/gi, 'Owner').replace(/\bMANAGER\b/gi, 'Staff'), profile.account_id));
+                let preferred = result.last_account_id;
+                try { preferred = localStorage.getItem('nau_last_login_profile') || preferred; } catch (_) {}
+                select.value = loginProfiles.some(p => p.account_id === preferred) ? preferred : '';
+                byId('nau-auth-message').textContent = loginProfiles.length ? '' : 'No profiles yet. Select Create profile.';
+            } catch (error) {
+                select.replaceChildren(new Option('Could not load profiles', ''));
+                byId('nau-auth-message').textContent = error.message;
+            } finally { select.disabled = false; updateLoginField(); }
+        }
+        byId('nau-login-profile').addEventListener('change', () => {
+            byId('nau-auth-password').value = '';
+            byId('nau-auth-user').value = '';
+            updateLoginField();
+        });
+        byId('nau-reload-profiles').addEventListener('click', () => { if (!busy) loadLoginProfiles(); });
+        function setMode(next) {
+            mode = next;
+            byId('nau-login-profile-label').hidden = mode !== 'login';
+            byId('nau-reload-profiles').hidden = mode !== 'login';
+            byId('nau-login-profile').required = mode === 'login';
+            updateLoginField();
+            if (mode === 'login' && !incomingTicket) loadLoginProfiles();
+            byId('nau-auth-form').hidden = false;
+            byId('nau-pin-form').hidden = true;
+            byId('nau-role-form').hidden = true;
+            byId('nau-change-pin').hidden = false;
+            byId('nau-edit-role-user').hidden = false;
+            byId('nau-delete-user').hidden = false;
+            byId('nau-delete-form').hidden = true;
+            byId('nau-delete-form').reset();
+            byId('nau-delete-profile').replaceChildren(new Option('Enter master PIN and load profiles', ''));
+            byId('nau-delete-profile').disabled = true;
+            byId('nau-role-form').reset();
+            byId('nau-role-profile').replaceChildren(new Option('Enter master PIN and load profiles', ''));
+            byId('nau-role-profile').disabled = true;
+            roleProfiles = [];
+            byId('nau-pin-form').reset();
+            const privileged = mode !== 'login';
+            byId('nau-auth-title').textContent = mode === 'login' ? 'Log in' : mode === 'register' ? 'Create profile' : 'Reset password';
+            byId('nau-auth-submit').textContent = byId('nau-auth-title').textContent;
+            byId('nau-auth-help').textContent = privileged ? 'Use the master PIN set on the server. Passwords need at least 8 characters.' : 'Enter your profile to open the POS.';
+            byId('nau-password-label').textContent = mode === 'reset' ? 'New password' : 'Password';
+            byId('nau-auth-password').autocomplete = privileged ? 'new-password' : 'current-password';
+            byId('nau-auth-password').minLength = privileged ? 8 : 1;
+            byId('nau-forgot-password').hidden = privileged;
+            byId('nau-confirm-label').hidden = !privileged;
+            byId('nau-pin-label').hidden = !privileged;
+            byId('nau-role-label').hidden = mode !== 'register';
+            byId('nau-auth-role').required = mode === 'register';
+            if (mode === 'register') byId('nau-auth-role').value = 'STAFF';
+            byId('nau-auth-confirm').required = privileged;
+            byId('nau-auth-pin').required = privileged;
+            ['nau-auth-password', 'nau-auth-confirm', 'nau-auth-pin'].forEach(id => { byId(id).value = ''; });
+            byId('nau-auth-message').textContent = '';
+            panel.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+        }
+        panel.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => { if (!busy) setMode(button.dataset.mode); }));
+        byId('nau-change-pin').addEventListener('click', () => {
+            if (busy) return;
+            byId('nau-auth-form').reset();
+            byId('nau-auth-form').hidden = true;
+            byId('nau-pin-form').hidden = false;
+            byId('nau-change-pin').hidden = true;
+            byId('nau-edit-role-user').hidden = true;
+            byId('nau-delete-user').hidden = true;
+            byId('nau-auth-title').textContent = 'Change master PIN';
+            byId('nau-auth-help').textContent = 'Enter your current PIN and confirm a new 6-digit PIN.';
+            byId('nau-pin-message').textContent = '';
+            byId('nau-old-pin').focus();
+        });
+        byId('nau-pin-back').addEventListener('click', () => { if (!busy) setMode('login'); });
+        byId('nau-edit-role-user').addEventListener('click', () => {
+            if (busy) return;
+            byId('nau-auth-form').reset();
+            byId('nau-auth-form').hidden = true;
+            byId('nau-pin-form').hidden = true;
+            byId('nau-delete-form').hidden = true;
+            byId('nau-role-form').hidden = false;
+            byId('nau-change-pin').hidden = true;
+            byId('nau-edit-role-user').hidden = true;
+            byId('nau-delete-user').hidden = true;
+            byId('nau-auth-title').textContent = 'Edit user role';
+            byId('nau-auth-help').textContent = 'Enter the 6-digit master PIN, choose a profile, then set Owner or Staff.';
+            byId('nau-role-message').textContent = '';
+            byId('nau-role-profile').replaceChildren(new Option('Enter master PIN and load profiles', ''));
+            byId('nau-role-profile').disabled = true;
+            byId('nau-role-select').value = 'STAFF';
+            roleProfiles = [];
+            byId('nau-role-pin').focus();
+        });
+        byId('nau-role-back').addEventListener('click', () => { if (!busy) setMode('login'); });
+        byId('nau-role-load-profiles').addEventListener('click', async () => {
+            if (busy) return;
+            busy = true;
+            byId('nau-role-load-profiles').disabled = true;
+            const select = byId('nau-role-profile');
+            select.replaceChildren(new Option('Choose a profile', ''));
+            select.disabled = true;
+            roleProfiles = [];
+            try {
+                const pin = byId('nau-role-pin').value;
+                if (!/^[0-9]{6}$/.test(pin)) throw new Error('Enter your 6-digit master PIN first.');
+                const hash = await digest(pin);
+                const result = await authCall('profiles', {pin_hash: hash.slice(6) + hash.slice(0, 6)});
+                roleProfiles = Array.isArray(result.profiles) ? result.profiles : [];
+                for (const profile of roleProfiles) {
+                    const displayLabel = String(profile.label || profile.username || profile.account_id || 'User')
+                        .replace(/\bFOUNDER\b/gi, 'Owner')
+                        .replace(/\bMANAGER\b/gi, 'Staff');
+                    select.add(new Option(displayLabel, profile.account_id));
+                }
+                select.disabled = roleProfiles.length === 0;
+                byId('nau-role-message').textContent = roleProfiles.length ? 'Select the profile whose role you want to change.' : 'No profiles exist.';
+            } catch (error) { byId('nau-role-message').textContent = error.message; }
+            finally { busy = false; byId('nau-role-load-profiles').disabled = false; }
+        });
+        byId('nau-role-profile').addEventListener('change', () => {
+            const profile = roleProfiles.find(item => item.account_id === byId('nau-role-profile').value);
+            byId('nau-role-select').value = profile && ['OWNER','FOUNDER'].includes(profile.role) ? (profile.role === 'FOUNDER' ? 'OWNER' : profile.role) : 'STAFF';
+        });
+        byId('nau-role-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            if (busy) return;
+            busy = true;
+            byId('nau-role-submit').disabled = true;
+            byId('nau-role-message').textContent = 'Saving…';
+            try {
+                const accountId = byId('nau-role-profile').value;
+                const role = byId('nau-role-select').value;
+                const pin = byId('nau-role-pin').value;
+                if (!accountId) throw new Error('Choose a user profile.');
+                if (!['OWNER', 'STAFF'].includes(role)) throw new Error('Choose Owner or Staff.');
+                if (!/^[0-9]{6}$/.test(pin)) throw new Error('Enter exactly 6 digits for the master PIN.');
+                const hash = await digest(pin);
+                const result = await authCall('update-role', {
+                    account_id: accountId,
+                    role,
+                    pin_hash: hash.slice(6) + hash.slice(0, 6)
+                });
+                setMode('login');
+                byId('nau-auth-message').textContent = result.message;
+            } catch (error) {
+                const message = String(error && error.message || error);
+                byId('nau-role-message').textContent = /role must be.*(FOUNDER|MANAGER)/i.test(message)
+                    ? 'The running server is outdated and still rejects Owner. Update server.py to the Owner/Staff version, restart it, then try again.'
+                    : message;
+            }
+            finally { busy = false; byId('nau-role-submit').disabled = false; }
+        });
+        byId('nau-delete-user').addEventListener('click', () => {
+            if (busy) return;
+            byId('nau-auth-form').reset();
+            byId('nau-auth-form').hidden = true;
+            byId('nau-pin-form').hidden = true;
+            byId('nau-change-pin').hidden = true;
+            byId('nau-edit-role-user').hidden = true;
+            byId('nau-delete-user').hidden = true;
+            byId('nau-delete-form').hidden = false;
+            byId('nau-auth-title').textContent = 'Delete user profile';
+            byId('nau-auth-help').textContent = 'Enter your master PIN, load profiles, then choose the employee to delete.';
+            byId('nau-delete-message').textContent = '';
+            byId('nau-delete-pin').focus();
+        });
+        byId('nau-load-profiles').addEventListener('click', async () => {
+            if (busy) return;
+            busy = true;
+            byId('nau-load-profiles').disabled = true;
+            const select = byId('nau-delete-profile');
+            select.replaceChildren(new Option('Choose a profile', ''));
+            select.disabled = true;
+            byId('nau-delete-confirm').checked = false;
+            try {
+                const pin = byId('nau-delete-pin').value;
+                if (!/^[0-9]{6}$/.test(pin)) throw new Error('Enter your 6-digit master PIN first.');
+                const hash = await digest(pin);
+                const result = await authCall('profiles', {pin_hash: hash.slice(6) + hash.slice(0, 6)});
+                for (const profile of result.profiles) select.add(new Option(String(profile.label || profile.username || profile.account_id || 'User').replace(/\bFOUNDER\b/gi, 'Owner').replace(/\bMANAGER\b/gi, 'Staff'), profile.account_id));
+                select.disabled = result.profiles.length === 0;
+                byId('nau-delete-message').textContent = result.profiles.length ? 'Select the profile to delete.' : 'No profiles exist.';
+            } catch (error) { byId('nau-delete-message').textContent = error.message; }
+            finally { busy = false; byId('nau-load-profiles').disabled = false; }
+        });
+        byId('nau-delete-profile').addEventListener('change', () => { byId('nau-delete-confirm').checked = false; });
+        byId('nau-delete-back').addEventListener('click', () => { if (!busy) setMode('login'); });
+        byId('nau-delete-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            if (busy) return;
+            busy = true;
+            byId('nau-delete-submit').disabled = true;
+            byId('nau-delete-message').textContent = 'Deleting…';
+            try {
+                const accountId = byId('nau-delete-profile').value;
+                const pin = byId('nau-delete-pin').value;
+                if (!accountId || !/^[0-9]{6}$/.test(pin) || !byId('nau-delete-confirm').checked) throw new Error('Select a profile, enter the master PIN, and confirm deletion.');
+                const hash = await digest(pin);
+                const result = await authCall('delete-user', {
+                    account_id: accountId, pin_hash: hash.slice(6) + hash.slice(0, 6), confirm_delete: true
+                });
+                setMode('login');
+                byId('nau-auth-message').textContent = result.message;
+            } catch (error) { byId('nau-delete-message').textContent = error.message; }
+            finally { busy = false; byId('nau-delete-submit').disabled = false; }
+        });
+        byId('nau-pin-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            if (busy) return;
+            busy = true;
+            byId('nau-pin-save').disabled = true;
+            byId('nau-pin-message').textContent = 'Saving…';
+            try {
+                const values = ['nau-old-pin', 'nau-new-pin', 'nau-new-pin-confirm'].map(id => byId(id).value);
+                if (!values.every(v => /^[0-9]{6}$/.test(v))) throw new Error('Every PIN must contain exactly 6 digits.');
+                if (values[1] !== values[2]) throw new Error('New PINs do not match.');
+                const hashes = await Promise.all(values.map(async value => {
+                    const hash = await digest(value);
+                    return hash.slice(6) + hash.slice(0, 6);
+                }));
+                const result = await authCall('change-pin', {
+                    old_pin_hash: hashes[0], new_pin_hash: hashes[1], confirm_pin_hash: hashes[2]
+                });
+                setMode('login');
+                byId('nau-auth-message').textContent = result.message;
+            } catch (error) { byId('nau-pin-message').textContent = error.message; }
+            finally { busy = false; byId('nau-pin-save').disabled = false; }
+        });
+        function unlock(session, sessionToken, username) {
+            token = sessionToken;
+            currentUsername = username;
+            currentRole = ['OWNER','FOUNDER'].includes(String(session && session.role || 'STAFF').trim().toUpperCase()) ? (String(session.role).trim().toUpperCase() === 'FOUNDER' ? 'OWNER' : String(session.role).trim().toUpperCase()) : 'STAFF';
+            panel.remove();
+            document.documentElement.classList.remove('nau-locked', 'nau-role-manager', 'nau-role-staff');
+            document.documentElement.classList.add(currentRole !== 'STAFF' ? 'nau-role-manager' : 'nau-role-staff');
+            const badge = document.createElement('button');
+            badge.id = 'nau-profile-logout';
+            badge.textContent = username + ' · ' + (currentRole === 'OWNER' ? 'Owner' : 'Staff') + ' · Log out';
+            badge.addEventListener('click', async () => {
+                badge.disabled = true;
+                document.documentElement.classList.add('nau-locked');
+                try { await authCall('logout', {}, token); } finally { relock(); }
+            });
+            document.body.appendChild(badge);
+            clearTimeout(expiryTimer);
+            const remaining = Math.max(0, session.expires_in * 1000);
+            logoutDeadline = Date.now() + remaining;
+            expiryTimer = setTimeout(relock, remaining);
+            finishLogin();
+        }
+        byId('nau-auth-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            if (busy) return;
+            busy = true;
+            byId('nau-auth-submit').disabled = true;
+            byId('nau-auth-message').textContent = 'Please wait…';
+            try {
+                const selectedProfile = loginProfiles.find(p => p.account_id === byId('nau-login-profile').value);
+                if (mode === 'login' && !selectedProfile) throw new Error('Choose a user profile.');
+                const username = (mode === 'login' && selectedProfile.username ? selectedProfile.username : byId('nau-auth-user').value).trim().normalize('NFC');
+                const password = byId('nau-auth-password').value;
+                if (!username) throw new Error('Enter a username.');
+                if (mode !== 'login' && password !== byId('nau-auth-confirm').value) throw new Error('Passwords do not match.');
+                const payload = {username, username_hash: await digest(username), credentials_hash: await digest(JSON.stringify([username, password]))};
+                if (mode === 'login') payload.account_id = selectedProfile.account_id;
+                if (mode === 'register') payload.role = byId('nau-auth-role').value;
+                if (mode !== 'login') {
+                    const pin = byId('nau-auth-pin').value;
+                    if (!/^[0-9]{6}$/.test(pin)) throw new Error('Enter exactly 6 digits for the master PIN.');
+                    const hashed = await digest(pin);
+                    payload.pin_hash = hashed.slice(6) + hashed.slice(0, 6);
+                }
+                const result = await authCall(mode, payload);
+                if (mode === 'login') {
+                    try { localStorage.setItem('nau_last_login_profile', result.account_id); } catch (_) {}
+                    unlock(result, result.token, result.username); return;
+                }
+                setMode('login');
+                byId('nau-auth-message').textContent = result.message;
+                byId('nau-auth-password').focus();
+            } catch (error) {
+                byId('nau-auth-message').textContent = error.message;
+            } finally {
+                busy = false;
+                const submit = byId('nau-auth-submit');
+                if (submit) submit.disabled = false;
+            }
+        });
+        setMode('login');
+        if (incomingTicket) {
+            busy = true;
+            byId('nau-auth-submit').disabled = true;
+            byId('nau-auth-message').textContent = 'Opening POS page…';
+            try {
+                // A SERVER restart during page navigation must not turn into a
+                // login prompt. The one-time ticket is hash-persisted server-side
+                // and this page retries once per second until SERVER is back.
+                const session = await authCallThroughRestart('resume', {
+                    ticket: incomingTicket, target: location.pathname.split('/').pop()
+                });
+                unlock(session, session.token, session.username);
+            } catch (_) {
+                panel.hidden = false;
+                loadLoginProfiles();
+                byId('nau-auth-message').textContent = 'Please log in to continue.';
+            } finally {
+                busy = false;
+                const button = byId('nau-auth-submit');
+                if (button) button.disabled = false;
+            }
+        }
+    });
+    window.addEventListener('pagehide', () => {
+        if (token && !leavingForPOS) nativeFetch(API + '/api/auth/logout', {
+            method: 'POST', headers: {'Authorization': 'Bearer ' + token}, keepalive: true
+        }).catch(() => {});
+    });
+    window.addEventListener('pageshow', event => { if (event.persisted) relock(); });
+    const checkDeadline = () => { if (token && Date.now() >= logoutDeadline) relock(); };
+    window.addEventListener('focus', checkDeadline);
+    document.addEventListener('visibilitychange', checkDeadline);
+})();
+</script>
+
+<style id="nau-storage-notice-style">
+#nau-storage-notice-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0,0,0,.68);
+    font-family: Arial, Helvetica, sans-serif;
+}
+#nau-storage-notice-overlay.open { display: flex; }
+#nau-storage-notice-card {
+    width: min(520px, 100%);
+    padding: 24px;
+    border: 1px solid #444;
+    border-radius: 12px;
+    background: #1b1b1b;
+    color: #eee;
+    box-shadow: 0 18px 60px rgba(0,0,0,.5);
+}
+#nau-storage-notice-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+}
+#nau-storage-notice-dot {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    border-radius: 50%;
+    background: #f2b84b;
+    box-shadow: 0 0 0 4px rgba(242,184,75,.10);
+}
+#nau-storage-notice-dot.restored {
+    background: #35c76f;
+    box-shadow: 0 0 0 4px rgba(53,199,111,.10);
+}
+#nau-storage-notice-title {
+    margin: 0;
+    color: #f4f4f4;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+#nau-storage-notice-message {
+    margin: 0;
+    color: #c9c9c9;
+    font-size: 16.5px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+}
+#nau-storage-notice-ok {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 20px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #2b2b2b;
+    color: #fff;
+    cursor: pointer;
+    font: 700 15.5px Arial, Helvetica, sans-serif;
+}
+#nau-storage-notice-ok:hover { background: #343434; }
+</style>
+
+
+<style id="nau-ui-scale">
+    /*
+        Global Náu POS UI scale.
+        0.85 = 15% smaller than normal browser 100% rendering.
+
+        `100vh` inside a zoomed root visually becomes only 85% of the
+        physical viewport, which caused the empty/different-color strip at
+        the bottom. The compensated viewport height below restores the page
+        to the full browser height while keeping the UI itself at 85%.
+    */
+    html {
+        zoom: 0.85;
+        background: #111;
+    }
+
+    body {
+        min-height: 117.6471vh;
+        background: #111;
+    }
+
+    main {
+        height: calc(117.6471vh - 80px) !important;
+        min-height: calc(117.6471vh - 80px) !important;
+    }
+</style>
+
+
+<style id="nau-exe-hamburger-clearance">
+/* Leave room for the floating EXE hamburger when its sidebar is hidden.
+   Move header branding only; preserve navigation and application behavior. */
+header > .headerLeft { margin-left: 58px; }
+header > .top > a:first-child { margin-left: 58px; }
+</style>
+</head>
+
+
+<body>
+
+    <header>
+
+        <div class="headerLeft">
+
+        <a
+            href="index.html"
+            class="brandLogoLink"
+            aria-label="Náu POS Home"
+            onclick="event.preventDefault(); window.NAUProfile.navigate('index.html');"
+        >
+            <img
+                src="http://127.0.0.1:8000/api/assets/nau-logo-header.png"
+                alt="Náu"
+                class="brandLogo"
+            >
+        </a>
+
+            <div id="serverStatus">
+                Connecting to server...
+            </div>
+
+        </div>
+
+
+        <nav id="mainNavigation">
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('index.html')"
+    >
+        POS
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('ingredients.html')"
+    >
+        Ingredients
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('stock.html')"
+    >
+        Stock
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('recipes.html')"
+    >
+        Recipes
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('prep.html')"
+    >
+        Prep
+    </button>
+
+    <button
+        class="navButton active"
+        onclick="window.NAUProfile.navigate('promo.html')"
+    >
+        Promo
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('sales.html')"
+    >
+        Sales
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('finance.html')"
+    >
+        Finance
+    </button>
+
+    <button
+        class="navButton"
+        onclick="window.NAUProfile.navigate('customers.html')"
+    >
+        Customer
+    </button>
+
+
+    <button class="navButton nau-manager-only" onclick="window.NAUProfile.navigate('settings.html')">Settings</button>
+</nav>
+
+    </header>
+
+
+    <main>
+
+
+
+
+        <div class="pageHeader">
+
+            <div class="pageHeaderLeft">
+
+                <h2>
+                    Promo Codes
+                </h2>
+
+                <p>
+                    Create and manage percentage or fixed-value discounts used by the POS.
+                </p>
+
+            </div>
+
+
+            <button
+                id="addPromoButton"
+                class="addButton"
+                onclick="openAddPromoModal()"
+            >
+                + ADD PROMO
+            </button>
+
+        </div>
+
+
+        <div class="summaryGrid">
+
+            <div class="summaryCard">
+
+                <div class="summaryLabel">
+                    Total promo codes
+                </div>
+
+                <div
+                    id="totalPromoCount"
+                    class="summaryValue"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <div class="summaryLabel">
+                    Active
+                </div>
+
+                <div
+                    id="activePromoCount"
+                    class="summaryValue activeValue"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="summaryCard">
+
+                <div class="summaryLabel">
+                    Inactive
+                </div>
+
+                <div
+                    id="inactivePromoCount"
+                    class="summaryValue inactiveValue"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="controlBar">
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search name, ID or type..."
+                oninput="filterPromocodes()"
+            >
+
+
+            <select
+                id="statusFilter"
+                onchange="filterPromocodes()"
+            >
+
+                <option value="ALL">
+                    ALL STATUS
+                </option>
+
+                <option value="ACTIVE">
+                    ACTIVE
+                </option>
+
+                <option value="INACTIVE">
+                    INACTIVE
+                </option>
+
+            </select>
+
+
+            <button
+                class="clearButton"
+                onclick="clearFilters()"
+            >
+                CLEAR
+            </button>
+
+        </div>
+
+
+        <div class="tableContainer">
+
+            <table id="promoTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Code ID
+                        </th>
+
+                        <th>
+                            Display Name
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Value
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="promoTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="emptyState"
+                        >
+                            Loading promo codes...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+
+    <!-- ADD / EDIT PROMO -->
+
+    <div id="promoOverlay">
+
+        <div id="promoModal">
+
+            <h2 id="promoModalTitle">
+                Add Promo Code
+            </h2>
+
+
+            <div class="formGroup">
+
+                <label for="promoIdInput">
+                    Promo Code ID
+                </label>
+
+                <input
+                    id="promoIdInput"
+                    type="text"
+                    maxlength="64"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="Example: EMPLOY20"
+                >
+
+                <div class="fieldHint">
+                    This is the code entered on the POS. Letters, numbers, underscore and hyphen only.
+                </div>
+
+            </div>
+
+
+            <div class="formGroup">
+
+                <label for="promoNameInput">
+                    Display Name
+                </label>
+
+                <input
+                    id="promoNameInput"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Example: Employee Discount 20%"
+                >
+
+                <div class="fieldHint">
+                    This name is displayed on the POS, receipt and sale history.
+                </div>
+
+            </div>
+
+
+            <div
+                class="formGroup"
+                id="promoTypeGroup"
+            >
+
+                <label>
+                    Discount Type
+                </label>
+
+
+                <div class="typePicker">
+
+                    <div class="typeOption">
+
+                        <input
+                            id="promoTypePercent"
+                            type="radio"
+                            name="promoType"
+                            value="PERCENT"
+                            checked
+                            onchange="updateValueField()"
+                        >
+
+                        <label
+                            class="typeOptionLabel"
+                            for="promoTypePercent"
+                        >
+
+                            <div class="typeOptionTitle">
+                                PERCENT
+                            </div>
+
+                            <div class="typeOptionDescription">
+                                Discount a percentage of the whole bill subtotal. Example: 20% off.
+                            </div>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="typeOption">
+
+                        <input
+                            id="promoTypeFixed"
+                            type="radio"
+                            name="promoType"
+                            value="FIXED"
+                            onchange="updateValueField()"
+                        >
+
+                        <label
+                            class="typeOptionLabel"
+                            for="promoTypeFixed"
+                        >
+
+                            <div class="typeOptionTitle">
+                                FIXED
+                            </div>
+
+                            <div class="typeOptionDescription">
+                                Discount a fixed VND amount from the whole bill subtotal.
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="formGroup">
+
+                <label
+                    id="promoValueLabel"
+                    for="promoValueInput"
+                >
+                    Discount Percentage
+                </label>
+
+                <input
+                    id="promoValueInput"
+                    type="number"
+                    min="0.01"
+                    max="100"
+                    step="0.01"
+                    placeholder="20"
+                >
+
+                <div
+                    id="promoValueHint"
+                    class="fieldHint"
+                >
+                    Enter a percentage greater than 0 and no more than 100.
+                </div>
+
+            </div>
+
+
+            <div
+                class="formGroup"
+                id="promoMaxUsesGroup"
+            >
+                <label for="promoMaxUsesInput">Maximum Uses</label>
+                <input id="promoMaxUsesInput" type="number" min="1" step="1"
+                    placeholder="Leave blank for unlimited">
+                <div class="fieldHint">Optional. Example: 50 = 50 successful sales. Blank = unlimited.</div>
+            </div>
+
+            <div
+                class="formGroup"
+                id="promoExpiresAtGroup"
+            >
+                <label for="promoExpiresAtInput">Valid Until</label>
+                <input id="promoExpiresAtInput" type="date">
+                <div class="fieldHint">Optional. The promo stays valid through 23:59 of the selected day. Blank = no expiry.</div>
+            </div>
+
+            <div class="formGroup">
+
+                <div class="activeControl">
+
+                    <div class="activeControlText">
+
+                        <strong>
+                            Active Promo
+                        </strong>
+
+                        <span>
+                            Inactive promo codes stay saved but cannot be applied at the POS.
+                        </span>
+
+                    </div>
+
+
+                    <label class="toggleSwitch">
+
+                        <input
+                            id="promoActiveInput"
+                            type="checkbox"
+                            checked
+                        >
+
+                        <span class="toggleSlider">
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="modalButtons">
+
+                <button
+                    id="cancelPromoButton"
+                    onclick="closePromoModal()"
+                >
+                    CANCEL
+                </button>
+
+                <button
+                    id="savePromoButton"
+                    onclick="savePromoCode()"
+                
+                    data-enter-confirm="true">
+                    SAVE
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- APP DIALOG -->
+
+    <div id="appDialogOverlay">
+
+        <div
+            id="appDialogModal"
+            class="info"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="appDialogTitle"
+            aria-describedby="appDialogMessage"
+        >
+
+            <div class="appDialogHeader">
+
+                <div id="appDialogIndicator">
+                </div>
+
+                <div id="appDialogTitle">
+                    NAU POS
+                </div>
+
+            </div>
+
+
+            <div id="appDialogMessage">
+            </div>
+
+
+            <div class="appDialogButtons">
+
+                <button
+                    id="appDialogCancelButton"
+                    class="appDialogButton"
+                    onclick="closeAppDialog(false)"
+                >
+                    CANCEL
+                </button>
+
+                <button
+                    id="appDialogConfirmButton"
+                    class="appDialogButton"
+                    onclick="closeAppDialog(true)"
+                >
+                    OK
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const SERVER_URL =
+            "http://127.0.0.1:8000";
+
+
+        let promocodes =
+            [];
+
+
+        let pointRewardPromocode =
+            null;
+
+
+        let editingPointRewardPromo =
+            false;
+
+
+        let editingPromocodeId =
+            null;
+
+
+        let appDialogResolver =
+            null;
+
+
+        // ============================================================
+        // APP DIALOG
+        // ============================================================
+
+        function showAppDialog(
+            options = {}
+        ) {
+
+            return new Promise(
+                resolve => {
+
+                    const overlay =
+                        document.getElementById(
+                            "appDialogOverlay"
+                        );
+
+
+                    const modal =
+                        document.getElementById(
+                            "appDialogModal"
+                        );
+
+
+                    const title =
+                        document.getElementById(
+                            "appDialogTitle"
+                        );
+
+
+                    const message =
+                        document.getElementById(
+                            "appDialogMessage"
+                        );
+
+
+                    const cancelButton =
+                        document.getElementById(
+                            "appDialogCancelButton"
+                        );
+
+
+                    const confirmButton =
+                        document.getElementById(
+                            "appDialogConfirmButton"
+                        );
+
+
+                    const tone =
+                        [
+                            "info",
+                            "success",
+                            "warning",
+                            "error"
+                        ].includes(
+                            options.tone
+                        )
+                            ?
+                                options.tone
+                            :
+                                "info";
+
+
+                    modal.classList.remove(
+                        "info",
+                        "success",
+                        "warning",
+                        "error"
+                    );
+
+
+                    modal.classList.add(
+                        tone
+                    );
+
+
+                    title.textContent =
+                        options.title ||
+                        "NAU POS";
+
+
+                    message.textContent =
+                        options.message ||
+                        "";
+
+
+                    confirmButton.textContent =
+                        options.confirmText ||
+                        "OK";
+
+
+                    if (
+                        options.cancelText
+                    ) {
+
+                        cancelButton.textContent =
+                            options.cancelText;
+
+
+                        cancelButton.style.display =
+                            "block";
+
+                    }
+
+                    else {
+
+                        cancelButton.style.display =
+                            "none";
+
+                    }
+
+
+                    if (
+                        appDialogResolver
+                    ) {
+
+                        const oldResolver =
+                            appDialogResolver;
+
+
+                        appDialogResolver =
+                            null;
+
+
+                        oldResolver(
+                            false
+                        );
+
+                    }
+
+
+                    appDialogResolver =
+                        resolve;
+
+
+                    overlay.classList.add(
+                        "active"
+                    );
+
+
+                    window.setTimeout(
+                        function () {
+
+                            confirmButton.focus();
+
+                        },
+                        0
+                    );
+
+                }
+            );
+
+        }
+
+
+        function closeAppDialog(
+            result
+        ) {
+
+            document.getElementById(
+                "appDialogOverlay"
+            ).classList.remove(
+                "active"
+            );
+
+
+            if (
+                !appDialogResolver
+            ) {
+
+                return;
+
+            }
+
+
+            const resolver =
+                appDialogResolver;
+
+
+            appDialogResolver =
+                null;
+
+
+            resolver(
+                Boolean(
+                    result
+                )
+            );
+
+        }
+
+
+        function appAlert(
+            message,
+            options = {}
+        ) {
+
+            return showAppDialog(
+                {
+
+                    title:
+                        options.title ||
+                        "NAU POS",
+
+                    message:
+                        message,
+
+                    tone:
+                        options.tone ||
+                        "info",
+
+                    confirmText:
+                        options.confirmText ||
+                        "OK",
+
+                    cancelText:
+                        null
+
+                }
+            );
+
+        }
+
+
+        function appConfirm(
+            message,
+            options = {}
+        ) {
+
+            return showAppDialog(
+                {
+
+                    title:
+                        options.title ||
+                        "Confirm",
+
+                    message:
+                        message,
+
+                    tone:
+                        options.tone ||
+                        "warning",
+
+                    confirmText:
+                        options.confirmText ||
+                        "CONFIRM",
+
+                    cancelText:
+                        options.cancelText ||
+                        "CANCEL"
+
+                }
+            );
+
+        }
+
+
+        // ============================================================
+        // KEYBOARD
+        // ============================================================
+
+        document.addEventListener(
+            "keydown",
+            function (
+                event
+            ) {
+
+                const appOverlay =
+                    document.getElementById(
+                        "appDialogOverlay"
+                    );
+
+
+                if (
+                    appOverlay.classList.contains(
+                        "active"
+                    )
+                ) {
+
+                    if (
+                        event.key ===
+                        "Escape"
+                    ) {
+
+                        event.preventDefault();
+
+
+                        const cancelButton =
+                            document.getElementById(
+                                "appDialogCancelButton"
+                            );
+
+
+                        closeAppDialog(
+                            cancelButton.style.display !==
+                            "none"
+                                ?
+                                    false
+                                :
+                                    true
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+
+                        closeAppDialog(
+                            true
+                        );
+
+
+                        return;
+
+                    }
+
+                }
+
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    const promoOverlay =
+                        document.getElementById(
+                            "promoOverlay"
+                        );
+
+
+                    if (
+                        promoOverlay.classList.contains(
+                            "active"
+                        )
+                    ) {
+
+                        closePromoModal();
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        // ============================================================
+        // SERVER STATUS
+        // ============================================================
+
+        async function checkServer() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        SERVER_URL +
+                        "/"
+                    );
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        "Server unavailable"
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    data.status !==
+                    "online"
+                ) {
+
+                    throw new Error(
+                        "Invalid server response"
+                    );
+
+                }
+
+
+                document.getElementById(
+                    "serverStatus"
+                ).textContent =
+                    "Server online";
+
+
+                document.getElementById(
+                    "serverStatus"
+                ).style.color =
+                    "#7cff7c";
+
+
+                return true;
+
+            }
+
+            catch (error) {
+
+                document.getElementById(
+                    "serverStatus"
+                ).textContent =
+                    "Server offline";
+
+
+                document.getElementById(
+                    "serverStatus"
+                ).style.color =
+                    "#ff6666";
+
+
+                console.error(
+                    error
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        // ============================================================
+        // SPECIAL POINT REWARD PROMO
+        //
+        // It is shown in the SAME table as every other promo. It remains a
+        // system promo internally because its behavior is different:
+        // selected customer spends points -> cheapest single drink is free.
+        // ============================================================
+
+        function isPointRewardPromocode(
+            promocode
+        ) {
+
+            return (
+                promocode
+                &&
+                String(
+                    promocode.type ||
+                    ""
+                ).toUpperCase()
+                ===
+                "POINTS_FREE_CHEAPEST"
+            );
+
+        }
+
+
+        function setPointRewardModalMode(
+            enabled
+        ) {
+
+            editingPointRewardPromo =
+                Boolean(
+                    enabled
+                );
+
+
+            const typeGroup =
+                document.getElementById(
+                    "promoTypeGroup"
+                );
+
+
+            const maxUsesGroup =
+                document.getElementById(
+                    "promoMaxUsesGroup"
+                );
+
+
+            const expiresGroup =
+                document.getElementById(
+                    "promoExpiresAtGroup"
+                );
+
+
+            [
+                typeGroup,
+                maxUsesGroup,
+                expiresGroup
+            ].forEach(
+                element => {
+
+                    if (
+                        !element
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    element.style.display =
+                        editingPointRewardPromo
+                            ?
+                                "none"
+                            :
+                                "";
+
+                }
+            );
+
+
+            updateValueField();
+
+        }
+
+
+        // ============================================================
+        // LOAD PROMOS
+        // ============================================================
+
+        async function loadPromocodes() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        SERVER_URL +
+                        "/api/promocodes"
+                    );
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                }
+
+                catch {
+
+                    data =
+                        {};
+
+                }
+
+
+                if (
+                    !response.ok ||
+                    data.success !==
+                    true
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "Could not load promo codes."
+                    );
+
+                }
+
+
+                const standardPromocodes =
+                    Array.isArray(
+                        data.promocodes
+                    )
+                        ?
+                            data.promocodes
+                        :
+                            [];
+
+
+                pointRewardPromocode =
+                    (
+                        data.point_reward_promocode &&
+                        typeof data.point_reward_promocode ===
+                        "object"
+                    )
+                        ?
+                            data.point_reward_promocode
+                        :
+                            null;
+
+
+                promocodes =
+                    [
+                        ...standardPromocodes
+                    ];
+
+
+                if (
+                    pointRewardPromocode
+                ) {
+
+                    promocodes.push(
+                        pointRewardPromocode
+                    );
+
+                }
+
+
+                promocodes.sort(
+                    (
+                        first,
+                        second
+                    ) => {
+
+                        return String(
+                            first.name ||
+                            first.id ||
+                            ""
+                        ).localeCompare(
+                            String(
+                                second.name ||
+                                second.id ||
+                                ""
+                            ),
+                            undefined,
+                            {
+                                sensitivity:
+                                    "base"
+                            }
+                        );
+
+                    }
+                );
+
+
+                updateSummary();
+
+
+                filterPromocodes();
+
+
+                return true;
+
+            }
+
+            catch (error) {
+
+                promocodes =
+                    [];
+
+
+                updateSummary();
+
+
+                document.getElementById(
+                    "promoTableBody"
+                ).innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="errorState"
+                        >
+                            Could not load promo codes.
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                console.error(
+                    "Could not load promo codes:",
+                    error
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        // ============================================================
+        // SUMMARY
+        // ============================================================
+
+        function updateSummary() {
+
+            const activeCount =
+                promocodes.filter(
+                    promocode =>
+                        promocode.active ===
+                        true
+                ).length;
+
+
+            const inactiveCount =
+                promocodes.length -
+                activeCount;
+
+
+            document.getElementById(
+                "totalPromoCount"
+            ).textContent =
+                promocodes.length;
+
+
+            document.getElementById(
+                "activePromoCount"
+            ).textContent =
+                activeCount;
+
+
+            document.getElementById(
+                "inactivePromoCount"
+            ).textContent =
+                inactiveCount;
+
+        }
+
+
+        // ============================================================
+        // MONEY
+        // ============================================================
+
+        function formatMoney(value) {
+    const number = Number(value || 0);
+    if (!Number.isFinite(number)) return "0 VND";
+    const rounded = Math.round(number);
+    return (Object.is(rounded, -0) ? 0 : rounded).toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VND";
+}
+
+
+        // ============================================================
+        // HTML ESCAPE
+        // ============================================================
+
+        function escapeHTML(
+            value
+        ) {
+
+            return String(
+                value ??
+                ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        // ============================================================
+        // DISPLAY PROMO VALUE
+        // ============================================================
+
+        function getPromocodeValueDisplay(
+            promocode
+        ) {
+
+            const type =
+                String(
+                    promocode.type ||
+                    ""
+                ).toUpperCase();
+
+
+            if (
+                type ===
+                "POINTS_FREE_CHEAPEST"
+            ) {
+
+                return (
+                    Number(
+                        promocode.points_cost ||
+                        0
+                    ).toLocaleString(
+                        "en-US"
+                    )
+                    +
+                    " points • cheapest drink free"
+                );
+
+            }
+
+
+            if (
+                type ===
+                "PERCENT"
+            ) {
+
+                return Number(
+                    promocode.value ||
+                    0
+                ).toLocaleString(
+                    "en-US",
+                    {
+                        maximumFractionDigits:
+                            3
+                    }
+                ) + "%";
+
+            }
+
+
+            return formatMoney(
+                promocode.value
+            );
+
+        }
+
+
+        // ============================================================
+        // DISPLAY PROMOS
+        // ============================================================
+
+        function displayPromocodes(
+            list
+        ) {
+
+            const tbody =
+                document.getElementById(
+                    "promoTableBody"
+                );
+
+
+            tbody.innerHTML =
+                "";
+
+
+            if (
+                list.length ===
+                0
+            ) {
+
+                tbody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="emptyState"
+                        >
+                            No promo codes found.
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            list.forEach(
+                promocode => {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    const isActive =
+                        promocode.active ===
+                        true;
+
+
+                    row.innerHTML = `
+
+                        <td>
+
+                            <span class="promoId">
+
+                                ${escapeHTML(
+                                    promocode.id
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="promoName">
+
+                                ${escapeHTML(
+                                    promocode.name
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="promoTypeBadge">
+
+                                ${escapeHTML(
+                                    isPointRewardPromocode(
+                                        promocode
+                                    )
+                                        ?
+                                            "POINT REWARD"
+                                        :
+                                            promocode.type
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="promoValue">
+
+                                ${escapeHTML(
+                                    getPromocodeValueDisplay(
+                                        promocode
+                                    )
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="statusBadge ${
+                                    isActive
+                                        ?
+                                            "active"
+                                        :
+                                            "inactive"
+                                }"
+                            >
+
+                                ${
+                                    isActive
+                                        ?
+                                            "ACTIVE"
+                                        :
+                                            "INACTIVE"
+                                }
+
+                            </span>
+                            <div class="fieldHint" style="margin-top:6px">
+                                ${
+                                    isPointRewardPromocode(
+                                        promocode
+                                    )
+                                        ?
+                                            "System reward<br>Cheapest single drink free"
+                                        :
+                                            (
+                                                "Uses: " +
+                                                Number(
+                                                    promocode.used_count ||
+                                                    0
+                                                ) +
+                                                " / " +
+                                                (
+                                                    promocode.max_uses == null
+                                                        ?
+                                                            "∞"
+                                                        :
+                                                            escapeHTML(
+                                                                promocode.max_uses
+                                                            )
+                                                ) +
+                                                "<br>" +
+                                                (
+                                                    promocode.expires_at
+                                                        ?
+                                                            "Until: " +
+                                                            escapeHTML(
+                                                                String(
+                                                                    promocode.expires_at
+                                                                ).slice(
+                                                                    0,
+                                                                    10
+                                                                )
+                                                            ) +
+                                                            " (23:59)"
+                                                        :
+                                                            "No expiry"
+                                                )
+                                            )
+                                }
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="actionButtons">
+
+                                <button
+                                    class="actionButton editButton"
+                                    data-promo-id="${escapeHTML(
+                                        promocode.id
+                                    )}"
+                                    onclick="openEditPromoModal(this.dataset.promoId)"
+                                >
+                                    EDIT
+                                </button>
+
+
+                                ${
+                                    isPointRewardPromocode(
+                                        promocode
+                                    )
+                                        ?
+                                            `
+                                                <button
+                                                    class="actionButton"
+                                                    type="button"
+                                                    disabled
+                                                    title="This is a built-in system promo."
+                                                    style="opacity:.45;cursor:not-allowed"
+                                                >
+                                                    SYSTEM
+                                                </button>
+                                            `
+                                        :
+                                            `
+                                                <button
+                                                    class="actionButton deleteButton"
+                                                    data-promo-id="${escapeHTML(
+                                                        promocode.id
+                                                    )}"
+                                                    onclick="deletePromoCode(this.dataset.promoId)"
+                                                >
+                                                    DELETE
+                                                </button>
+                                            `
+                                }
+
+                            </div>
+
+                        </td>
+
+                    `;
+
+
+                    tbody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ============================================================
+        // FILTER
+        // ============================================================
+
+        function filterPromocodes() {
+
+            const search =
+                document.getElementById(
+                    "searchInput"
+                ).value
+                    .trim()
+                    .toLowerCase();
+
+
+            const status =
+                document.getElementById(
+                    "statusFilter"
+                ).value;
+
+
+            const filtered =
+                promocodes.filter(
+                    promocode => {
+
+                        const searchable =
+                            [
+                                promocode.id,
+                                promocode.name,
+                                promocode.type,
+                                getPromocodeValueDisplay(
+                                    promocode
+                                )
+                            ]
+                                .join(
+                                    " "
+                                )
+                                .toLowerCase();
+
+
+                        const matchesSearch =
+                            search ===
+                            ""
+                            ||
+                            searchable.includes(
+                                search
+                            );
+
+
+                        const matchesStatus =
+                            status ===
+                            "ALL"
+                            ||
+                            (
+                                status ===
+                                "ACTIVE"
+                                &&
+                                promocode.active ===
+                                true
+                            )
+                            ||
+                            (
+                                status ===
+                                "INACTIVE"
+                                &&
+                                promocode.active !==
+                                true
+                            );
+
+
+                        return (
+                            matchesSearch &&
+                            matchesStatus
+                        );
+
+                    }
+                );
+
+
+            displayPromocodes(
+                filtered
+            );
+
+        }
+
+
+        function clearFilters() {
+
+            document.getElementById(
+                "searchInput"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "statusFilter"
+            ).value =
+                "ALL";
+
+
+            filterPromocodes();
+
+        }
+
+
+        // ============================================================
+        // FIND PROMO
+        // ============================================================
+
+        function findPromocode(
+            promocodeId
+        ) {
+
+            const target =
+                String(
+                    promocodeId ||
+                    ""
+                )
+                    .trim()
+                    .toUpperCase();
+
+
+            return promocodes.find(
+                promocode =>
+                    String(
+                        promocode.id ||
+                        ""
+                    )
+                        .trim()
+                        .toUpperCase()
+                    ===
+                    target
+            ) || null;
+
+        }
+
+
+        // ============================================================
+        // ADD PROMO
+        // ============================================================
+
+        function openAddPromoModal() {
+
+            editingPromocodeId =
+                null;
+
+
+            setPointRewardModalMode(
+                false
+            );
+
+
+            document.getElementById(
+                "promoModalTitle"
+            ).textContent =
+                "Add Promo Code";
+
+
+            document.getElementById(
+                "promoIdInput"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "promoNameInput"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "promoTypePercent"
+            ).checked =
+                true;
+
+
+            document.getElementById(
+                "promoTypeFixed"
+            ).checked =
+                false;
+
+
+            document.getElementById(
+                "promoValueInput"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "promoActiveInput"
+            ).checked =
+                true;
+
+            document.getElementById("promoMaxUsesInput").value = "";
+            document.getElementById("promoExpiresAtInput").value = "";
+
+
+            document.getElementById(
+                "savePromoButton"
+            ).textContent =
+                "CREATE PROMO";
+
+
+            updateValueField();
+
+
+            document.getElementById(
+                "promoOverlay"
+            ).classList.add(
+                "active"
+            );
+
+
+            window.setTimeout(
+                function () {
+
+                    document.getElementById(
+                        "promoIdInput"
+                    ).focus();
+
+                },
+                0
+            );
+
+        }
+
+
+        // ============================================================
+        // EDIT PROMO
+        // ============================================================
+
+        async function openEditPromoModal(
+            promocodeId
+        ) {
+
+            const promocode =
+                findPromocode(
+                    promocodeId
+                );
+
+
+            if (
+                !promocode
+            ) {
+
+                await appAlert(
+                    "Promo code could not be found.",
+                    {
+                        title:
+                            "Promo Error",
+
+                        tone:
+                            "error"
+                    }
+                );
+
+
+                return;
+
+            }
+
+
+            editingPromocodeId =
+                promocode.id;
+
+
+            const special =
+                isPointRewardPromocode(
+                    promocode
+                );
+
+
+            setPointRewardModalMode(
+                special
+            );
+
+
+            document.getElementById(
+                "promoModalTitle"
+            ).textContent =
+                "Edit Promo Code";
+
+
+            document.getElementById(
+                "promoIdInput"
+            ).value =
+                promocode.id;
+
+
+            document.getElementById(
+                "promoNameInput"
+            ).value =
+                promocode.name ||
+                "";
+
+
+            document.getElementById(
+                "promoActiveInput"
+            ).checked =
+                promocode.active ===
+                true;
+
+
+            if (
+                special
+            ) {
+
+                document.getElementById(
+                    "promoValueInput"
+                ).value =
+                    promocode.points_cost ??
+                    "";
+
+
+                document.getElementById(
+                    "promoMaxUsesInput"
+                ).value =
+                    "";
+
+
+                document.getElementById(
+                    "promoExpiresAtInput"
+                ).value =
+                    "";
+
+            }
+
+            else {
+
+                const type =
+                    String(
+                        promocode.type ||
+                        ""
+                    ).toUpperCase();
+
+
+                document.getElementById(
+                    "promoTypePercent"
+                ).checked =
+                    type ===
+                    "PERCENT";
+
+
+                document.getElementById(
+                    "promoTypeFixed"
+                ).checked =
+                    type ===
+                    "FIXED";
+
+
+                document.getElementById(
+                    "promoValueInput"
+                ).value =
+                    promocode.value ??
+                    "";
+
+
+                document.getElementById(
+                    "promoMaxUsesInput"
+                ).value =
+                    promocode.max_uses == null
+                        ?
+                            ""
+                        :
+                            promocode.max_uses;
+
+
+                document.getElementById(
+                    "promoExpiresAtInput"
+                ).value =
+                    promocode.expires_at
+                        ?
+                            String(
+                                promocode.expires_at
+                            ).slice(
+                                0,
+                                10
+                            )
+                        :
+                            "";
+
+            }
+
+
+            document.getElementById(
+                "savePromoButton"
+            ).textContent =
+                "SAVE CHANGES";
+
+
+            updateValueField();
+
+
+            document.getElementById(
+                "promoOverlay"
+            ).classList.add(
+                "active"
+            );
+
+        }
+
+
+        // ============================================================
+        // CLOSE MODAL
+        // ============================================================
+
+        function closePromoModal() {
+
+            document.getElementById(
+                "promoOverlay"
+            ).classList.remove(
+                "active"
+            );
+
+
+            editingPromocodeId =
+                null;
+
+
+            setPointRewardModalMode(
+                false
+            );
+
+
+            const saveButton =
+                document.getElementById(
+                    "savePromoButton"
+                );
+
+
+            saveButton.disabled =
+                false;
+
+
+            saveButton.textContent =
+                "SAVE";
+
+        }
+
+
+        // ============================================================
+        // PROMO TYPE
+        // ============================================================
+
+        function getSelectedPromoType() {
+
+            const checked =
+                document.querySelector(
+                    'input[name="promoType"]:checked'
+                );
+
+
+            return checked
+                ?
+                    checked.value
+                :
+                    "PERCENT";
+
+        }
+
+
+        function updateValueField() {
+
+            const label =
+                document.getElementById(
+                    "promoValueLabel"
+                );
+
+
+            const input =
+                document.getElementById(
+                    "promoValueInput"
+                );
+
+
+            const hint =
+                document.getElementById(
+                    "promoValueHint"
+                );
+
+
+            if (
+                editingPointRewardPromo
+            ) {
+
+                label.textContent =
+                    "Points Required";
+
+
+                input.min =
+                    "1";
+
+
+                input.removeAttribute(
+                    "max"
+                );
+
+
+                input.step =
+                    "1";
+
+
+                input.placeholder =
+                    "100";
+
+
+                hint.textContent =
+                    "The selected customer spends this many points and the cheapest single drink on the bill becomes free.";
+
+
+                return;
+
+            }
+
+
+            const type =
+                getSelectedPromoType();
+
+
+            if (
+                type ===
+                "PERCENT"
+            ) {
+
+                label.textContent =
+                    "Discount Percentage";
+
+
+                input.min =
+                    "0.01";
+
+
+                input.max =
+                    "100";
+
+
+                input.step =
+                    "0.01";
+
+
+                input.placeholder =
+                    "20";
+
+
+                hint.textContent =
+                    "Enter a percentage greater than 0 and no more than 100.";
+
+            }
+
+            else {
+
+                label.textContent =
+                    "Fixed Discount (VND)";
+
+
+                input.min =
+                    "0.01";
+
+
+                input.removeAttribute(
+                    "max"
+                );
+
+
+                input.step =
+                    "1";
+
+
+                input.placeholder =
+                    "50000";
+
+
+                hint.textContent =
+                    "Enter the fixed VND amount that will be deducted from the bill subtotal.";
+
+            }
+
+        }
+
+
+        // ============================================================
+        // READ / VALIDATE FORM
+        // ============================================================
+
+        function readPromoForm() {
+
+            const id =
+                document.getElementById(
+                    "promoIdInput"
+                ).value
+                    .trim()
+                    .toUpperCase();
+
+
+            const name =
+                document.getElementById(
+                    "promoNameInput"
+                ).value
+                    .trim();
+
+
+            const rawValue =
+                document.getElementById(
+                    "promoValueInput"
+                ).value;
+
+
+            const value =
+                Number(
+                    rawValue
+                );
+
+
+            const active =
+                document.getElementById(
+                    "promoActiveInput"
+                ).checked;
+
+
+            if (
+                !id
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        "Promo code ID is required."
+                };
+
+            }
+
+
+            if (
+                id.length >
+                64
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        "Promo code ID is too long."
+                };
+
+            }
+
+
+            if (
+                !/^[A-Z0-9_-]+$/.test(
+                    id
+                )
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        "Promo code ID may only contain letters, numbers, underscore, and hyphen."
+                };
+
+            }
+
+
+            if (
+                !name
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        "Promo code name is required."
+                };
+
+            }
+
+
+            if (
+                editingPointRewardPromo
+            ) {
+
+                if (
+                    !Number.isInteger(
+                        value
+                    )
+                    ||
+                    value <
+                    1
+                ) {
+
+                    return {
+                        valid:
+                            false,
+
+                        error:
+                            "Points Required must be a whole number of at least 1."
+                    };
+
+                }
+
+
+                return {
+
+                    valid:
+                        true,
+
+                    data: {
+
+                        id:
+                            id,
+
+                        name:
+                            name,
+
+                        points_cost:
+                            value,
+
+                        active:
+                            active
+
+                    }
+
+                };
+
+            }
+
+
+            const type =
+                getSelectedPromoType();
+
+
+            const maxUsesRaw =
+                document.getElementById(
+                    "promoMaxUsesInput"
+                ).value.trim();
+
+
+            const maxUses =
+                maxUsesRaw ===
+                ""
+                    ?
+                        null
+                    :
+                        Number(
+                            maxUsesRaw
+                        );
+
+
+            const expiresAtRaw =
+                document.getElementById(
+                    "promoExpiresAtInput"
+                ).value;
+
+
+            const expiresAt =
+                expiresAtRaw
+                    ?
+                        expiresAtRaw
+                    :
+                        null;
+
+
+            if (
+                !Number.isFinite(
+                    value
+                )
+                ||
+                value <=
+                0
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        type ===
+                        "PERCENT"
+                            ?
+                                "Percentage discount must be greater than 0."
+                            :
+                                "Fixed discount must be greater than 0."
+                };
+
+            }
+
+
+            if (
+                type ===
+                "PERCENT"
+                &&
+                value >
+                100
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        "Percentage discount cannot be greater than 100%."
+                };
+
+            }
+
+
+            if (
+                maxUses !==
+                null
+                &&
+                (
+                    !Number.isInteger(
+                        maxUses
+                    )
+                    ||
+                    maxUses <
+                    1
+                )
+            ) {
+
+                return {
+                    valid:
+                        false,
+
+                    error:
+                        "Maximum uses must be a whole number of at least 1, or left blank."
+                };
+
+            }
+
+
+            return {
+
+                valid:
+                    true,
+
+                data: {
+
+                    id:
+                        id,
+
+                    name:
+                        name,
+
+                    type:
+                        type,
+
+                    value:
+                        value,
+
+                    active:
+                        active,
+
+                    max_uses:
+                        maxUses,
+
+                    expires_at:
+                        expiresAt
+
+                }
+
+            };
+
+        }
+
+
+        // ============================================================
+        // SAVE PROMO
+        // ============================================================
+
+        async function savePromoCode() {
+
+            const form =
+                readPromoForm();
+
+
+            if (
+                !form.valid
+            ) {
+
+                await appAlert(
+                    form.error,
+                    {
+                        title:
+                            "Invalid Promo Code",
+
+                        tone:
+                            "warning"
+                    }
+                );
+
+
+                return;
+
+            }
+
+
+            const isSpecial =
+                editingPointRewardPromo;
+
+
+            const isEditing =
+                isSpecial
+                ||
+                editingPromocodeId !==
+                null;
+
+
+            const originalId =
+                editingPromocodeId;
+
+
+            const saveButton =
+                document.getElementById(
+                    "savePromoButton"
+                );
+
+
+            saveButton.disabled =
+                true;
+
+
+            saveButton.textContent =
+                "SAVING...";
+
+
+            try {
+
+                const url =
+                    isSpecial
+                        ?
+                            SERVER_URL +
+                            "/api/promocodes/point-reward-special"
+                        :
+                            (
+                                isEditing
+                                    ?
+                                        SERVER_URL +
+                                        "/api/promocodes/" +
+                                        encodeURIComponent(
+                                            originalId
+                                        )
+                                    :
+                                        SERVER_URL +
+                                        "/api/promocodes"
+                            );
+
+
+                const response =
+                    await fetch(
+                        url,
+                        {
+
+                            method:
+                                isSpecial
+                                    ?
+                                        "PUT"
+                                    :
+                                        (
+                                            isEditing
+                                                ?
+                                                    "PUT"
+                                                :
+                                                    "POST"
+                                        ),
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    form.data
+                                )
+
+                        }
+                    );
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                }
+
+                catch {
+
+                    data =
+                        {};
+
+                }
+
+
+                if (
+                    !response.ok ||
+                    data.success !==
+                    true
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "Could not save promo code."
+                    );
+
+                }
+
+
+                closePromoModal();
+
+
+                await loadPromocodes();
+
+
+                const idChanged =
+                    String(
+                        originalId ||
+                        ""
+                    ).toUpperCase()
+                    !==
+                    String(
+                        form.data.id ||
+                        ""
+                    ).toUpperCase();
+
+
+                if (
+                    isEditing
+                ) {
+
+                    await appAlert(
+                        idChanged
+                            ?
+                                "Promo code updated successfully.\n\n" +
+                                "Old ID: " +
+                                originalId +
+                                "\n" +
+                                "New ID: " +
+                                form.data.id
+                            :
+                                "Promo code updated successfully.",
+                        {
+                            title:
+                                "Promo Updated",
+
+                            tone:
+                                "success",
+
+                            confirmText:
+                                "DONE"
+                        }
+                    );
+
+                }
+
+                else {
+
+                    await appAlert(
+                        "Promo code created successfully.\n\n" +
+                        "Code: " +
+                        form.data.id,
+                        {
+                            title:
+                                "Promo Created",
+
+                            tone:
+                                "success",
+
+                            confirmText:
+                                "DONE"
+                        }
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Save promo failed:",
+                    error
+                );
+
+
+                await appAlert(
+                    "Could not save promo code.\n\n" +
+                    error.message,
+                    {
+                        title:
+                            "Save Failed",
+
+                        tone:
+                            "error"
+                    }
+                );
+
+            }
+
+            finally {
+
+                saveButton.disabled =
+                    false;
+
+
+                if (
+                    document.getElementById(
+                        "promoOverlay"
+                    ).classList.contains(
+                        "active"
+                    )
+                ) {
+
+                    saveButton.textContent =
+                        isEditing
+                            ?
+                                "SAVE CHANGES"
+                            :
+                                "CREATE PROMO";
+
+                }
+
+            }
+
+        }
+
+
+        // ============================================================
+        // DELETE PROMO
+        // ============================================================
+
+        async function deletePromoCode(
+            promocodeId
+        ) {
+
+            const promocode =
+                findPromocode(
+                    promocodeId
+                );
+
+
+            if (
+                !promocode
+            ) {
+
+                await appAlert(
+                    "Promo code could not be found.",
+                    {
+                        title:
+                            "Promo Error",
+
+                        tone:
+                            "error"
+                    }
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                isPointRewardPromocode(
+                    promocode
+                )
+            ) {
+
+                await appAlert(
+                    "This is a built-in system promo. You can edit its ID, name, point cost, and active status, but it cannot be deleted.",
+                    {
+                        title:
+                            "System Promo",
+
+                        tone:
+                            "info"
+                    }
+                );
+
+
+                return;
+
+            }
+
+
+            const confirmed =
+                await appConfirm(
+                    "Delete this promo code?\n\n" +
+                    promocode.name +
+                    "\nCode: " +
+                    promocode.id +
+                    "\nValue: " +
+                    getPromocodeValueDisplay(
+                        promocode
+                    ) +
+                    "\n\n" +
+                    "This removes it from the promo database. Existing completed sales keep their saved promo history.",
+                    {
+                        title:
+                            "Delete Promo Code",
+
+                        tone:
+                            "error",
+
+                        confirmText:
+                            "DELETE",
+
+                        cancelText:
+                            "CANCEL"
+                    }
+                );
+
+
+            if (
+                !confirmed
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        SERVER_URL +
+                        "/api/promocodes/" +
+                        encodeURIComponent(
+                            promocode.id
+                        ),
+                        {
+                            method:
+                                "DELETE"
+                        }
+                    );
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                }
+
+                catch {
+
+                    data =
+                        {};
+
+                }
+
+
+                if (
+                    !response.ok ||
+                    data.success !==
+                    true
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "Could not delete promo code."
+                    );
+
+                }
+
+
+                await loadPromocodes();
+
+
+                await appAlert(
+                    "Promo code deleted.\n\n" +
+                    promocode.id,
+                    {
+                        title:
+                            "Promo Deleted",
+
+                        tone:
+                            "success",
+
+                        confirmText:
+                            "DONE"
+                    }
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Delete promo failed:",
+                    error
+                );
+
+
+                await appAlert(
+                    "Could not delete promo code.\n\n" +
+                    error.message,
+                    {
+                        title:
+                            "Delete Failed",
+
+                        tone:
+                            "error"
+                    }
+                );
+
+            }
+
+        }
+
+
+        // ============================================================
+        // CLICK OUTSIDE MODAL
+        // ============================================================
+
+        document.getElementById(
+            "promoOverlay"
+        ).addEventListener(
+            "click",
+            function (
+                event
+            ) {
+
+                if (
+                    event.target ===
+                    this
+                ) {
+
+                    closePromoModal();
+
+                }
+
+            }
+        );
+
+
+        // ============================================================
+        // START
+        // ============================================================
+
+        async function startPromoPage() {
+
+            const online =
+                await checkServer();
+
+
+            if (
+                !online
+            ) {
+
+                document.getElementById(
+                    "addPromoButton"
+                ).disabled =
+                    true;
+
+
+                document.getElementById(
+                    "promoTableBody"
+                ).innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="errorState"
+                        >
+                            Server offline.
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "addPromoButton"
+            ).disabled =
+                false;
+
+
+            await loadPromocodes();
+
+        }
+
+
+        startPromoPage();
+
+    </script>
+
+
+<script id="nau-storage-notice-script">
+(() => {
+    'use strict';
+
+    const STORAGE_API = 'http://127.0.0.1:8000';
+    let lastNoticeId = null;
+    let noticeInitialized = false;
+    let polling = false;
+
+    function ensureStorageDialog() {
+        let overlay = document.getElementById('nau-storage-notice-overlay');
+        if (overlay) return overlay;
+
+        overlay = document.createElement('div');
+        overlay.id = 'nau-storage-notice-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'nau-storage-notice-title');
+        overlay.innerHTML = `
+            <div id="nau-storage-notice-card">
+                <div id="nau-storage-notice-heading">
+                    <span id="nau-storage-notice-dot" aria-hidden="true"></span>
+                    <h2 id="nau-storage-notice-title">STORAGE WARNING</h2>
+                </div>
+                <p id="nau-storage-notice-message"></p>
+                <button id="nau-storage-notice-ok" type="button">OK</button>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        document.getElementById('nau-storage-notice-ok')
+            .addEventListener('click', () => overlay.classList.remove('open'));
+
+        return overlay;
+    }
+
+    function updateServerStatus(storage) {
+        const element =
+            document.getElementById('serverStatus')
+            || document.getElementById('serverStatusText');
+
+        if (!element || !storage) return;
+
+        if (String(storage.mode || '').toUpperCase() === 'BACKUP') {
+            element.textContent = 'Server online • BACKUP';
+        }
+    }
+
+    function showStorageNotice(storage) {
+        if (!storage || typeof storage !== 'object') return;
+
+        const notice = storage.notice;
+        if (!notice || notice.id === undefined || notice.id === null) return;
+
+        const noticeId = String(notice.id);
+
+        // /notifications/pending only returns an undisplayed event.
+        // Never suppress the first pending notification on page load.
+        noticeInitialized = true;
+
+        if (noticeId === lastNoticeId) return;
+        lastNoticeId = noticeId;
+
+        const backupActive =
+            String(notice.type || '').toLowerCase() === 'database_failover';
+
+        const mainRestored =
+            String(notice.type || '').toLowerCase() === 'main_restored' ||
+            String(notice.message || '').startsWith('MAIN DATABASE RESTORED');
+
+        const overlay = ensureStorageDialog();
+        document.getElementById('nau-storage-notice-title').textContent =
+            mainRestored
+                ? 'MAIN DATABASE RESTORED'
+                : (
+                    backupActive
+                        ? 'DATABASE BACKUP ACTIVE'
+                        : 'STORAGE WARNING'
+                );
+
+        const dot =
+            document.getElementById('nau-storage-notice-dot');
+
+        dot.classList.toggle(
+            'restored',
+            mainRestored
+        );
+
+        let message;
+
+        if (mainRestored) {
+            message =
+                'The main database is available again.\n\n' +
+                'Backup data has been synchronized and verified. ' +
+                'The POS is now using the main database again.';
+        } else if (backupActive) {
+            message =
+                'The main database is currently unavailable.\n\n' +
+                'The POS has switched to the live backup database. ' +
+                'You can continue working normally while the server waits for Main to return.';
+        } else {
+            message =
+                String(
+                    notice.message ||
+                    'The server reported a storage warning.'
+                );
+        }
+
+        document.getElementById('nau-storage-notice-message').textContent =
+            message;
+
+        overlay.classList.add('open');
+    }
+
+    async function pollStorageStatus() {
+        if (polling) return;
+        polling = true;
+
+        try {
+            const response = await window.fetch(
+                STORAGE_API + '/api/server/notifications/pending',
+                {
+                    headers: {
+                        'X-NAU-Backend-Diagnostic': '1'
+                    }
+                }
+            );
+
+            if (!response.ok) return;
+
+            const payload = await response.json();
+            const notice =
+            payload &&
+            payload.notification;
+
+            if (!notice) return;
+
+            // Show it first, THEN tell the server it was displayed.
+            showStorageNotice({
+                notice: notice
+            });
+
+            await window.fetch(
+                STORAGE_API + '/api/server/notifications/ack',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-NAU-Backend-Diagnostic': '1'
+                    },
+                    body: JSON.stringify({
+                        id: notice.id,
+                        client: 'promo.html'
+                    })
+                }
+            );
+        } catch (_) {
+            // No ACK on failure; pending notification remains available.
+        } finally {
+            polling = false;
+        }
+    }
+
+    function startStorageWatcher() {
+        ensureStorageDialog();
+        /* Database storage notifications disabled. */
+        window.setInterval(pollStorageStatus, 3000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startStorageWatcher, {once:true});
+    } else {
+        /* Database storage notifications are server-managed in V15. */
+    }
+})();
+</script>
+
+
+<script>
+// ============================================================
+// UNIVERSAL SERVER STATUS HEARTBEAT
+//
+// This is intentionally separate from order-data syncing.
+// A stalled/slow order PUT must never leave the header stuck on
+// "Server online". Every POS tab checks SERVER once per second.
+// ============================================================
+(() => {
+
+    const HEARTBEAT_URL =
+        "http://127.0.0.1:8000/";
+
+
+    const HEARTBEAT_INTERVAL_MS =
+        1000;
+
+
+    const HEARTBEAT_TIMEOUT_MS =
+        800;
+
+
+    let heartbeatBusy =
+        false;
+
+
+    function applyServerHeartbeatState(
+        online,
+        storageStatus = null
+    ) {
+
+        /*
+            index.html owns serverIsOnline through this function, which also
+            controls whether payment is allowed while SERVER is unavailable.
+        */
+        if (
+            typeof window.setServerConnectionState ===
+            "function"
+        ) {
+
+            window.setServerConnectionState(
+                online,
+                storageStatus
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+            customers.html has its own helper.
+        */
+        if (
+            typeof window.setServerStatus ===
+            "function"
+        ) {
+
+            const usingBackup =
+                online &&
+                storageStatus &&
+                String(
+                    storageStatus.mode ||
+                    ""
+                ).toUpperCase() ===
+                "BACKUP";
+
+
+            window.setServerStatus(
+                online,
+                online
+                    ?
+                        (
+                            usingBackup
+                                ?
+                                    "Server online • BACKUP"
+                                :
+                                    "Server online"
+                        )
+                    :
+                        "Server offline"
+            );
+
+
+            return;
+
+        }
+
+
+        const element =
+            document.getElementById(
+                "serverStatus"
+            );
+
+
+        if (
+            !element
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            online
+        ) {
+
+            const usingBackup =
+                storageStatus &&
+                String(
+                    storageStatus.mode ||
+                    ""
+                ).toUpperCase() ===
+                "BACKUP";
+
+
+            element.textContent =
+                usingBackup
+                    ?
+                        "Server online • BACKUP"
+                    :
+                        "Server online";
+
+
+            element.style.color =
+                "#7cff7c";
+
+        }
+
+        else {
+
+            element.textContent =
+                location.pathname.endsWith(
+                    "/index.html"
+                )
+                ||
+                location.pathname.endsWith(
+                    "/"
+                )
+                    ?
+                        "Server offline • SAVING LOCALLY"
+                    :
+                        "Server offline";
+
+
+            element.style.color =
+                "#ff6666";
+
+        }
+
+    }
+
+
+    async function runServerHeartbeat() {
+
+        if (
+            heartbeatBusy
+        ) {
+
+            return;
+
+        }
+
+
+        heartbeatBusy =
+            true;
+
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            window.setTimeout(
+                () => {
+
+                    controller.abort();
+
+                },
+                HEARTBEAT_TIMEOUT_MS
+            );
+
+
+        try {
+
+            const response =
+                await window.fetch(
+                    HEARTBEAT_URL,
+                    {
+                        method:
+                            "GET",
+
+                        cache:
+                            "no-store",
+
+                        signal:
+                            controller.signal
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "SERVER unavailable"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                data.status !==
+                "online"
+            ) {
+
+                throw new Error(
+                    "Invalid SERVER response"
+                );
+
+            }
+
+
+            applyServerHeartbeatState(
+                true,
+                data.storage ||
+                null
+            );
+
+        }
+
+        catch (error) {
+
+            applyServerHeartbeatState(
+                false
+            );
+
+        }
+
+        finally {
+
+            window.clearTimeout(
+                timeout
+            );
+
+
+            heartbeatBusy =
+                false;
+
+        }
+
+    }
+
+
+    function startServerHeartbeat() {
+
+        runServerHeartbeat();
+
+
+        window.setInterval(
+            runServerHeartbeat,
+            HEARTBEAT_INTERVAL_MS
+        );
+
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            startServerHeartbeat,
+            {
+                once:
+                    true
+            }
+        );
+
+    }
+
+    else {
+
+        startServerHeartbeat();
+
+    }
+
+})();
+</script>
+
+
+<script>
+/* ============================================================
+   UNIVERSAL ENTER = CONFIRM / SAVE
+
+   - Clicking buttons still works exactly as before.
+   - Enter confirms app dialogs.
+   - Enter activates the visible primary edit/popup action.
+   - Multiline textareas and select controls keep normal Enter behavior.
+   ============================================================ */
+(() => {
+
+    if (
+        window.__NAU_ENTER_CONFIRM_INSTALLED__
+    ) {
+
+        return;
+
+    }
+
+    window.__NAU_ENTER_CONFIRM_INSTALLED__ =
+        true;
+
+
+    function isVisibleEnterConfirmButton(
+        button
+    ) {
+
+        if (
+            !button
+            ||
+            button.disabled
+            ||
+            button.hidden
+        ) {
+
+            return false;
+
+        }
+
+
+        const style =
+            window.getComputedStyle(
+                button
+            );
+
+
+        if (
+            style.display ===
+            "none"
+            ||
+            style.visibility ===
+            "hidden"
+        ) {
+
+            return false;
+
+        }
+
+
+        if (
+            button.getClientRects().length ===
+            0
+        ) {
+
+            return false;
+
+        }
+
+
+        let parent =
+            button.parentElement;
+
+
+        while (
+            parent
+            &&
+            parent !==
+            document.body
+        ) {
+
+            if (
+                parent.hidden
+            ) {
+
+                return false;
+
+            }
+
+
+            const parentStyle =
+                window.getComputedStyle(
+                    parent
+                );
+
+
+            if (
+                parentStyle.display ===
+                "none"
+                ||
+                parentStyle.visibility ===
+                "hidden"
+            ) {
+
+                return false;
+
+            }
+
+
+            parent =
+                parent.parentElement;
+
+        }
+
+
+        return true;
+
+    }
+
+
+    function pressEnterConfirm(
+        button,
+        event
+    ) {
+
+        if (
+            !isVisibleEnterConfirmButton(
+                button
+            )
+        ) {
+
+            return false;
+
+        }
+
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+
+        /*
+            Use the real button click path. This preserves validation,
+            server acknowledgement, and the popup's existing close-on-success
+            behavior exactly as if the user clicked the button.
+        */
+        button.click();
+
+
+        return true;
+
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key !==
+                "Enter"
+                ||
+                event.repeat
+                ||
+                event.ctrlKey
+                ||
+                event.altKey
+                ||
+                event.metaKey
+                ||
+                event.shiftKey
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+                Dialog confirmation always has priority, even if focus is
+                still sitting in a field behind the dialog.
+            */
+            const appDialogOverlay =
+                document.getElementById(
+                    "appDialogOverlay"
+                );
+
+
+            if (
+                appDialogOverlay
+                &&
+                appDialogOverlay.classList.contains(
+                    "active"
+                )
+            ) {
+
+                const confirmButton =
+                    document.getElementById(
+                        "appDialogConfirmButton"
+                    );
+
+
+                if (
+                    pressEnterConfirm(
+                        confirmButton,
+                        event
+                    )
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+
+            const target =
+                event.target;
+
+
+            /*
+                Text / notes keep Enter for typing.
+                Numeric amount fields may use Enter as CONFIRM.
+            */
+            if (
+                target
+                &&
+                (
+                    target.tagName ===
+                    "TEXTAREA"
+                    ||
+                    target.tagName ===
+                    "SELECT"
+                    ||
+                    target.isContentEditable
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                target
+                &&
+                target.tagName ===
+                "INPUT"
+            ) {
+
+                const inputType =
+                    String(
+                        target.type ||
+                        "text"
+                    )
+                    .toLowerCase();
+
+
+                const inputMode =
+                    String(
+                        target.inputMode ||
+                        target.getAttribute(
+                            "inputmode"
+                        )
+                        ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                const numericInput =
+                    (
+                        inputType ===
+                        "number"
+                        ||
+                        inputType ===
+                        "range"
+                        ||
+                        inputMode ===
+                        "numeric"
+                        ||
+                        inputMode ===
+                        "decimal"
+                    );
+
+
+                if (
+                    !numericInput
+                ) {
+
+                    /*
+                        String/text fields do not submit on Enter.
+                        Multiline notes are TEXTAREA and were handled above.
+                    */
+                    return;
+
+                }
+
+
+                /*
+                    Commit the latest numeric value before triggering the same
+                    button the user would normally click.
+                */
+                target.blur();
+
+            }
+
+
+            /*
+                Buttons explicitly marked data-enter-confirm are the only
+                non-dialog controls Enter is allowed to activate.
+                This prevents Enter from accidentally selecting a payment
+                method, transferring a table, deleting something, etc.
+            */
+            const candidates =
+                Array.from(
+                    document.querySelectorAll(
+                        '[data-enter-confirm="true"]'
+                    )
+                )
+                .filter(
+                    isVisibleEnterConfirmButton
+                );
+
+
+            if (
+                candidates.length !==
+                1
+            ) {
+
+                return;
+
+            }
+
+
+            pressEnterConfirm(
+                candidates[
+                    0
+                ],
+                event
+            );
+
+        },
+        true
+    );
+
+})();
+</script>
+
+</body>
+
+</html>
