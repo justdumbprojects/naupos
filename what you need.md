@@ -1,46 +1,38 @@
 # What you need to run Náu POS
 
-This guide describes the current **Windows-oriented Python source version**. Some parts of the POS require optional integrations. A packaged EXE may bundle components differently.
+Náu POS is designed primarily for **64-bit Windows 10/11**. You can download a packaged Windows release or work with the Python source.
 
-## Required
+## Option A — Windows executable (easiest)
 
-1. **Windows 10/11** (the current application includes Windows-specific behavior and deployment assumptions).
-2. **Python 3.14 / 3.14t** — the project is developed with Python 3.14 free-threaded; start with the same interpreter used by the maintainer. Download from https://www.python.org/downloads/windows/ and verify with `py -0p`.
-3. **Git** (https://git-scm.com/downloads) or **GitHub Desktop** (https://desktop.github.com/) to clone and update the project.
-4. A modern browser such as **Microsoft Edge** or **Google Chrome** to open the POS frontend.
-5. The backend and frontend source files in `server/` and `pos/`. At the time this document was added, these directories still needed to be published from the sanitized source snapshot.
+1. Visit [GitHub Releases](https://github.com/justdumbprojects/naupos/releases).
+2. Download the Windows EXE from the latest suitable release's **Assets**.
+3. Follow that release's notes and complete the application's first-run setup using **test data** before live service.
 
-## Google Sheets finance and Google Drive backup (optional)
+A correctly packaged EXE includes its Python interpreter and Python dependencies, so **Python and pip are not required on the destination PC**. The desktop host may require Microsoft Edge **WebView2 Runtime** (commonly present on modern Windows). Google Sheets/Drive need internet access and separate authorization if you choose to enable them. A published EXE is not proof of clean-install compatibility; verify on a fresh Windows system.
 
-Install the Python Google API dependencies using the **same Python interpreter** that starts the server:
+## Option B — Python source (development)
+
+- **Windows 10/11** and **Python 3.14 / 3.14t**. The project is developed with the free-threaded Python build; check installed versions using `py -0p`.
+- **Git** or **GitHub Desktop** to clone the repository.
+- A modern browser for the local HTML interface.
+- Backend source in `server/server.py` and frontend pages in `pos/` (both are included in this repository).
+
+Follow [How to set up](how%20to%20setup.md). This repository has not yet been verified as a complete clean-room source installation.
+
+## Optional Google Sheets finance and Google Drive backup
+
+These integrations are **not necessary for basic local POS operation**. To use them from Python source, install the dependencies into the interpreter that runs the server:
 
 ```powershell
 py -3.14 -m pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 ```
 
-If you run the free-threaded interpreter, ensure the installation and server launch use that same interpreter (check `py -0p`).
+If using 3.14t, select the corresponding interpreter explicitly. Configure your own Google Cloud project, enable the Drive and Sheets APIs, and create a Desktop OAuth client; see [How to set up](how%20to%20setup.md). Never publish OAuth client files or access tokens.
 
-You will also need a Google Cloud project, enabled **Google Drive API** and **Google Sheets API**, and an OAuth **Desktop app** client JSON. Setup instructions: [how to setup.md](how%20to%20setup.md).
+## Public edition exclusions
 
-## Camera streaming (optional)
+The public POS edition is intended to operate locally **without the remote Founder/Owner API, Cloudflare Tunnel autostart, or live-camera streaming**. Neither FFmpeg nor cloudflared is a prerequisite for the public edition. If you encounter references to those features in code, report them as possible leftovers rather than treating them as required setup.
 
-- Install **FFmpeg** from https://ffmpeg.org/download.html (Windows builds are linked from that page).
-- Add `ffmpeg` to PATH, or set the `NAU_CAMERA_FFMPEG` environment variable to the executable path.
-- Confirm: `ffmpeg -version`.
-- Configure your own camera RTSP URL via `NAU_CAMERA_RTSP_URL`; keep passwords out of Git.
+## Before using real business data
 
-## Remote Founder/Owner API (optional)
-
-- **cloudflared** from https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
-- A Cloudflare account and configured Tunnel with an appropriate public hostname.
-- The server may attempt to find/download `cloudflared.exe` on Windows, but manual installation is useful for troubleshooting.
-- Store the tunnel token in local protected settings or the supported runtime environment, **never in this repository**.
-- Keep the public API protected with HTTPS and application authentication.
-
-## Useful checks
-
-```powershell
-py -0p
-```
-
-Not all integrations are necessary for basic local POS usage. The source currently lacks a fully verified end-to-end fresh-install dependency manifest, so additional environment-specific setup may be needed.
+Test ordering, payment finalization, inventory deduction, printing, backups and recovery with fake data. Keep independent backups and do not assume a published release has been certified for production use.
