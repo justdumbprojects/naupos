@@ -91,6 +91,6 @@ NAU/
 
 ## 9. Safe development practices
 
-Use fake customers, dummy orders, and isolated storage. Do not test payment finalization, stock deduction, or backup restoration on live business data. Keep `google_finance_client.json`, OAuth tokens, `POSsettings.json`, Cloudflare tokens, and databases out of version control.
+Use fake customers, dummy orders, and isolated storage. Do not test payment finalization, stock deduction, or backup restoration on live business data. Keep `google_finance_client.json`, OAuth tokens, `POSsettings.json`, and databases out of version control.
 
 **Current limitation:** The codebase has not yet been validated as a complete clean-room installation. The instructions describe the observed source behavior and known dependencies, not a guaranteed one-click installer.
