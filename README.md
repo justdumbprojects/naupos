@@ -52,6 +52,16 @@ Features reflect the current project source and ongoing development; individual 
 | `server/google_finance_client.example.json` | Example Google OAuth client configuration; **not a real credential** |
 | `docs/` | Development and security documentation |
 
+## Windows — download the ready-to-run app
+
+**Using Windows and don't want to build from source?** Head to the [GitHub Releases page](https://github.com/justdumbprojects/naupos/releases) to download a pre-packaged Náu POS executable **when a Windows release is available**.
+
+1. Open the latest release.
+2. Under **Assets**, download the Windows `.exe` (or installer, if provided).
+3. Follow the release notes for installation, first-run setup, and any prerequisites.
+
+The packaged version is intended for Windows users who prefer not to install Python or build the app themselves. **If the Releases page has no downloadable Windows build yet, use the source setup instructions below.**
+
 ## Getting started
 
 This project is primarily developed on **Windows with Python 3.14 / 3.14t**. The frontend is HTML/CSS/JavaScript, served by a local Python backend.
