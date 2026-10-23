@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+# Builds
+build/
+dist/
+*.exe
+*.msi
+# Runtime database and backups
+NAU/
+NAUPOSSYS/
+DATABASE/
+HISTORY/
+TEMPS/
+*.db
+*.sqlite*
+*.bak
+*.log
+# Credentials
+.env
+.env.*
+!.env.example
+google_finance_client.json
+google_finance_token.json
+*client_secret*.json
+*credentials*.json
+*token*.json
+*service_account*.json
+*.pem
+*.key
+*.p12
+# Editors
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
